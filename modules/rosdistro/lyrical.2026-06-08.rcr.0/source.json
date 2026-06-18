@@ -7,7 +7,6 @@
         "cppzmq_build.patch": "sha256-lmSOyChvr5N3xII3iAQpBUHGO5jImVfjA8dJJHMnVBE=",
         "BUILD.bazel": "sha256-1c+RiEnvFvc7IKJ9PegI61VtKW4vzFDPCXQrT4Kt/Bs=",
         "libzmq_module.patch": "sha256-aMjZ9KHtXKVokaOQ5AvOUINYGJIv0JL9GpfcZSTrTnY=",
-        "MODULE.bazel.lock": "sha256-mpyIRu+X0NpHKR2VAo4Pxs9xLezQehoVd4gXjxmK55c=",
         "requirements.in": "sha256-0FBNCCUjKBxkjXBOog6omRpTIY12rrcaK/FFPOFlKvI=",
         "cppzmq_module.patch": "sha256-/HI0du88vt3AR3kaRRo1fTBtHrAXn1+JQ2cUIOGHDB4=",
         "ogg_visibility.patch": "sha256-Uteu9QkqyisXBYGGJbVIOPiwnPQ1oqtC4Hf9vrdIVu8=",
