@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-ETjTv7ya4UcJmcx7MAP4exeTDJ/XhOn6vMmFd2pwWz0=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-dataspeed-can-msgs/ros-lyrical-dataspeed-can-msgs_2.0.7.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-dataspeed-can-msgs-2.0.7",
+    "overlay": {
+        "BUILD.bazel": "sha256-4AJ+2ofG87Unf49zSpD/1SxMUHon87wR8zMvIyLJ7dY=",
+        "msg/BUILD.bazel": "sha256-RpBy9BA1NtfqAsIoVtFgpgjWHaiJ3YxWEgxy3qBZ/f4="
+    }
+}

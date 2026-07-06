@@ -1,5 +1,8 @@
 {
     "integrity": "sha256-BSwEoWRH1eATvRHHSUSo9h7DzHKbAcMuT3qnsDo7L8k=",
     "url": "https://github.com/ros2-gbp/magic_enum-release/archive/refs/tags/release/lyrical/magic_enum/0.9.7-3.tar.gz",
-    "strip_prefix": "magic_enum-release-release-lyrical-magic_enum-0.9.7-3"
+    "strip_prefix": "magic_enum-release-release-lyrical-magic_enum-0.9.7-3",
+    "overlay": {
+        "BUILD.bazel": "sha256-zz1Z8O1Yk9JpqUfrOhNvJZvJ3IUJ3lh6z6+PKViJ5+k="
+    }
 }

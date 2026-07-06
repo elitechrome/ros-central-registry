@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-dE/ZijmXgBaYRI5EgDunm96htPQoyfA2XL+oKX26Cpo=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-dataspeed-can-msg-filters/ros-lyrical-dataspeed-can-msg-filters_2.0.7.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-dataspeed-can-msg-filters-2.0.7",
+    "overlay": {
+        "BUILD.bazel": "sha256-93o9TlUQdMQuO+kvrVUS2S/D9TrXiEaKfReTMXg7YzE="
+    }
+}

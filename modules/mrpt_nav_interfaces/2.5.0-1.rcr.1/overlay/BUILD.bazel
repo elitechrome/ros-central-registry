@@ -30,5 +30,6 @@ ament_package(
         "@rosdistro//:ament_package",
         "@rosidl_default_generators//:ament_package",
         "@rosidl_default_runtime//:ament_package",
+        "@sensor_msgs//:ament_package",
     ],
 )

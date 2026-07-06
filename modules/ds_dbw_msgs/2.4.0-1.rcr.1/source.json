@@ -1,0 +1,10 @@
+{
+    "integrity": "sha256-AccpmBkbHMvpf+ZGxbi66j55mSkhZgkUDtjf7vYn7SU=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ds-dbw-msgs/ros-lyrical-ds-dbw-msgs_2.4.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ds-dbw-msgs-2.4.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-B46f29dmlM5QQv25Dc7gB686plisKrLccZjfuI3NXKo=",
+        "msg/BUILD.bazel": "sha256-cAFoFCMZK6o3fDB/BU2JOnO35VNAS/NSUG4ejnuJ8b0=",
+        "msg/fields/BUILD.bazel": "sha256-tCtVW/RlsKjqyL0ZyvVEsn9smX+WFYHYlAayYaX+QhU="
+    }
+}

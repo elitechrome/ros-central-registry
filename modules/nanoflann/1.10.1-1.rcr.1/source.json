@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-M8wJ2qWjkmgjitRB1EqdLEqmifOZGfZaD/TXXRMh6F8=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-nanoflann/ros-lyrical-nanoflann_1.10.1.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-nanoflann-1.10.1",
+    "overlay": {
+        "BUILD.bazel": "sha256-GOyCjF78AAMAUDRwniCtTq9BsKT5PtIXRJPiyav6J6M="
+    }
+}

@@ -13,8 +13,16 @@
 # limitations under the License.
 
 load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosidl_default_generators//:defs.bzl", "default_generators")
 
 package(default_visibility = ["//visibility:public"])
+
+default_generators(
+    package_xml = "package.xml",
+    deps = [
+        "//msg:Frame",
+    ],
+)
 
 ### PACKAGING
 

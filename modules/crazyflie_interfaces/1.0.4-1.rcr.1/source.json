@@ -1,0 +1,10 @@
+{
+    "integrity": "sha256-Yc2W1pMfs/mxA4v2o0z4p/fpEXI5eMahDM33mKSLE8Q=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-crazyflie-interfaces/ros-lyrical-crazyflie-interfaces_1.0.4.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-crazyflie-interfaces-1.0.4",
+    "overlay": {
+        "BUILD.bazel": "sha256-AR/kB0MT430GYMH2bQC+7qgtxxijE4VwUji+R4WK20Y=",
+        "msg/BUILD.bazel": "sha256-WZN/Q8G2v47MTJq+DhnpbF5gOGfDy6Al84LKGRlv/hI=",
+        "srv/BUILD.bazel": "sha256-/tdH2NcVZtDmeyZO5aQ46TO61AtquPF8QpDCpY2AkoI="
+    }
+}

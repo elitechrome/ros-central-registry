@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-0k+j1yrVbG11+QdtIKbV0vKWN+NN7fB5tPVbAD25Sfk=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-pfs/ros-lyrical-pfs_0.15.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-pfs-0.15.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-hZyuw1v5HN2k00RZ02EG8V3evA8L/Ve+6X2YXOF0EfY="
+    }
+}

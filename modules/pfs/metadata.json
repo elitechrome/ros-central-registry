@@ -1,0 +1,13 @@
+{
+    "homepage": "https://github.com/dtrugman/pfs",
+    "maintainers": [
+        {
+            "email": "dtrugman@gmail.com",
+            "name": "Daniel Trugman"
+        }
+    ],
+    "versions": [
+        "0.15.0-1.rcr.1"
+    ],
+    "yanked_versions": {}
+}

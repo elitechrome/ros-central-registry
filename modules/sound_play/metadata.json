@@ -1,0 +1,17 @@
+{
+    "homepage": "https://github.com/ros-drivers/audio_common",
+    "maintainers": [
+        {
+            "email": "namniart@gmail.com",
+            "name": "Austin Hendrix"
+        },
+        {
+            "email": "shingogo.5511@gmail.com",
+            "name": "Shingo Kitagawa"
+        }
+    ],
+    "versions": [
+        "0.4.0-2.rcr.1"
+    ],
+    "yanked_versions": {}
+}

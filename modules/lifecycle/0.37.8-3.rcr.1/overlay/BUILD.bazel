@@ -17,6 +17,8 @@ load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps", "ros_local_de
 load("@rosdistro//python:defs.bzl", "py_pytest")
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
+package(default_visibility = ["//visibility:public"])
+
 ### EXECUTABLES
 
 DEPENDENCIES = {

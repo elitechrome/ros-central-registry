@@ -1,0 +1,89 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps", "ros_local_defines")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_shared_library")
+
+package(default_visibility = ["//visibility:public"])
+
+HEADERS = glob(["include/**/*.hpp"])
+
+PACKAGE_DATA = glob([
+    "config/**",
+    "launch/**",
+])
+
+DEPENDENCIES = {
+    "@rclcpp//:rclcpp": "@rclcpp//:rclcpp_library",
+    "@ros2_medkit_fault_reporter//:fault_reporter_lib": "@ros2_medkit_fault_reporter//:fault_reporter_lib_library",
+}
+
+cc_library(
+    name = "diagnostic_bridge_lib_library",
+    srcs = ["src/diagnostic_bridge_node.cpp"],
+    hdrs = HEADERS,
+    includes = ["include"],
+    local_defines = ros_local_defines(),
+    deps = DEPENDENCIES.values() + [
+        "@diagnostic_msgs//:cc",
+        "@ros2_medkit_msgs//:cc",
+    ],
+)
+
+cc_shared_library(
+    name = "diagnostic_bridge_lib",
+    dynamic_deps = DEPENDENCIES.keys(),
+    exports_filter = [":diagnostic_bridge_lib_library"],
+    deps = [":diagnostic_bridge_lib_library"],
+)
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps",
+    dynamic_deps = DEPENDENCIES.keys() + [
+        ":diagnostic_bridge_lib",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+cc_binary(
+    name = "diagnostic_bridge_node",
+    srcs = ["src/main.cpp"],
+    dynamic_deps = [":transitive_dynamic_deps"],
+    local_defines = ros_local_defines(),
+    deps = DEPENDENCIES.values() + [
+        ":diagnostic_bridge_lib_library",
+    ],
+)
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    data = PACKAGE_DATA,
+    executables = [":diagnostic_bridge_node"],
+    headers = HEADERS,
+    libraries = [":diagnostic_bridge_lib"],
+    package_xml = "package.xml",
+    deps = [
+        "@ament_cmake//:ament_package",
+        "@diagnostic_msgs//:ament_package",
+        "@rclcpp//:ament_package",
+        "@ros2_medkit_cmake//:ament_package",
+        "@ros2_medkit_fault_reporter//:ament_package",
+        "@ros2_medkit_msgs//:ament_package",
+        "@ros_workspace//:ament_package",
+        "@rosdistro//:ament_package",
+    ],
+)

@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-3ZAoDWqjlvgC348xVuw0wOx468r5TwMdu+vnn6ylCao=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-fault-reporter/ros-lyrical-ros2-medkit-fault-reporter_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-fault-reporter-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-uhWJWlCMEQr5+C5xE2+m6DMcOj1CO6t0PCJmJfGe/hc="
+    }
+}

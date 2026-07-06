@@ -1,0 +1,13 @@
+{
+    "homepage": "https://index.ros.org/p/video_to_image_msg_publisher/#lyrical",
+    "maintainers": [
+        {
+            "email": "gstavrinos@protonmail.com",
+            "name": "George Stavrinos"
+        }
+    ],
+    "versions": [
+        "0.9.5-2.rcr.1"
+    ],
+    "yanked_versions": {}
+}

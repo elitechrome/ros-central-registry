@@ -4,6 +4,7 @@
     "strip_prefix": "mrpt_msgs-release-release-lyrical-mrpt_msgs-0.6.0-3",
     "overlay": {
         "BUILD.bazel": "sha256-dIjqmEksO/Soe0BpRiYUQlZcPadss2On+MWnD2ekiIk=",
+        "msg/BUILD.bazel": "sha256-pEwqX3pOUvnNZr4fR3wN+yLacwo9X5ClIXoL1OiGK70=",
         "msg-common/BUILD.bazel": "sha256-U67MbAZXaVsOLh+J9WorGCaGn3MwoMmtH9WU/rUdfTo=",
         "msg-ros2/BUILD.bazel": "sha256-A0lsEsmeIuGDaFUjgFI2vrSQStmp89ZkmHzIjXipIYg=",
         "srv/BUILD.bazel": "sha256-cli0HBpcl/vanknT0kDqqIybi0Yw2xRNtbcxz1GZdVM="

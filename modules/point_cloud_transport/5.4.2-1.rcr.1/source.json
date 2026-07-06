@@ -4,9 +4,5 @@
     "strip_prefix": "point_cloud_transport-release-release-lyrical-point_cloud_transport-5.4.2-1",
     "overlay": {
         "BUILD.bazel": "sha256-fliCYxIs7LAcQJ7PAqzpW+/32BunQnSSCYhOMi+O2Ug="
-    },
-    "patches": {
-        "src__point_cloud_transport__cpp.patch": "sha256-N0zIsIfzJxCj0Cngu7YYh2Hh+hQslNUWE3WNUtsb9AA="
-    },
-    "patch_strip": 1
+    }
 }

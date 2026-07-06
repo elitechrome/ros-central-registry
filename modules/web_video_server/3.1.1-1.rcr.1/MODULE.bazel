@@ -40,6 +40,7 @@ bazel_dep(name = "rules_shell", version = "0.7.1")
 # RCR Dependencies
 bazel_dep(name = "ament_cmake_clang_tidy", version = "0.20.6-1.rcr.1")
 bazel_dep(name = "ament_cmake_copyright", version = "0.20.6-1.rcr.1")
+bazel_dep(name = "ament_cmake_cpplint", version = "0.20.6-1.rcr.1")
 bazel_dep(name = "ament_cmake_lint_cmake", version = "0.20.6-1.rcr.1")
 bazel_dep(name = "ament_cmake_ros", version = "0.15.8-1.rcr.1")
 bazel_dep(name = "ament_cmake_uncrustify", version = "0.20.6-1.rcr.1")

@@ -42,6 +42,7 @@ bazel_dep(name = "ament_cmake_ros", version = "0.15.8-1.rcr.1")
 bazel_dep(name = "rclcpp", version = "32.0.0-1.rcr.1")
 bazel_dep(name = "rosdistro", version = "lyrical.2026-06-08.rcr.1")
 bazel_dep(name = "tcb_span", version = "2.0.3-1.rcr.1")
+bazel_dep(name = "tl_expected", version = "0.0.0")
 
 # Setup Python
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")

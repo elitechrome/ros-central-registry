@@ -17,11 +17,14 @@ Setup a Bazel workspace for testing ROS distributions in CI.
 """
 
 import argparse
+import gzip
 import os
 import re
 import sys
+import urllib.request
 from pathlib import Path
 from typing import Dict, List, Set
+
 
 def scan_module_for_dependencies(
     module_dot_bazel: Path,
@@ -56,6 +59,22 @@ VARIANTS = {
     "perception": "perception",
     "simulation": "simulation",
 }
+
+APT_SLICES = {
+    "nongui": re.compile(r"."),
+    "navigation": re.compile(
+        r"(^|-)nav2?($|-)|navigation|slam|map-server|octomap-server|amcl|planner|costmap"
+    ),
+}
+
+GUI_PACKAGE_RE = re.compile(
+    r"(^|-)(rviz2?|rqt|qt[56]?|qml[0-9]*|gui|libgui|gazebo|gz|ignition|webots|viz|visualization(?!-msgs(?:$|-))|renderer|rendering|render|ogre|glu|libopengl|opengl|turtlebot[0-9]?|turtlesim|tb3|tb4|demos?|viewer|editor|view|webview|foxglove)($|-)",
+    re.IGNORECASE,
+)
+
+INTERFACE_PACKAGE_PARTS = {"action", "idl", "msg", "srv"}
+SKIPPED_OVERLAY_PACKAGE_PARTS = {"test", "tests"}
+GENERATED_ROOT_TARGETS = ("c", "cc", "idl", "proto", "py", "rs")
 
 BAZELRC_TEMPLATE = """# Copyright 2026 Open Source Robotics Foundation, Inc.
 #
@@ -244,6 +263,201 @@ def calculate_packages_for_variant(
     visited.discard("rosdistro")
     return sorted(list(visited))
 
+
+def _parse_apt_packages(data: bytes, ros_distro: str) -> Dict[str, List[str]]:
+    packages: Dict[str, List[str]] = {}
+    prefix = f"ros-{ros_distro}-"
+    text = gzip.decompress(data).decode("utf-8", errors="replace")
+    for stanza in text.split("\n\n"):
+        package_match = re.search(r"^Package: ([^\n]+)", stanza, re.MULTILINE)
+        if not package_match:
+            continue
+        package = package_match.group(1)
+        if not package.startswith(prefix):
+            continue
+
+        depends_match = re.search(r"^Depends: ([^\n]+(?:\n .+)*)", stanza, re.MULTILINE)
+        depends: List[str] = []
+        if depends_match:
+            depends_text = depends_match.group(1).replace("\n ", " ")
+            for dep in depends_text.split(","):
+                dep_name = dep.strip().split(" ", 1)[0]
+                if dep_name.startswith(prefix):
+                    depends.append(dep_name)
+        packages[package] = depends
+    return packages
+
+
+def _fetch_apt_packages(
+    cache_dir: Path, ubuntu_distro: str, architecture: str, ros_distro: str
+) -> Dict[str, List[str]]:
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = cache_dir / f"ros2_{ubuntu_distro}_{architecture}_Packages.gz"
+    if not cache_file.exists():
+        url = (
+            "http://packages.ros.org/ros2/ubuntu/dists/"
+            f"{ubuntu_distro}/main/binary-{architecture}/Packages.gz"
+        )
+        with urllib.request.urlopen(url, timeout=60) as response:
+            cache_file.write_bytes(response.read())
+    return _parse_apt_packages(cache_file.read_bytes(), ros_distro)
+
+
+def _apt_to_module_name(package: str, ros_distro: str) -> str:
+    return package.removeprefix(f"ros-{ros_distro}-").replace("-", "_")
+
+
+def _has_target_roots(modules_dir: Path, module_name: str, version: str) -> bool:
+    module_dir = modules_dir / module_name / version
+    overlay_dir = module_dir / "overlay"
+    return overlay_dir.exists() and any(overlay_dir.rglob("BUILD.bazel"))
+
+
+def _target_patterns_for_package(
+    modules_dir: Path, module_name: str, version: str
+) -> List[str]:
+    overlay_dir = modules_dir / module_name / version / "overlay"
+    patterns: List[str] = []
+    root_build_file = overlay_dir / "BUILD.bazel"
+    if root_build_file.exists():
+        root_build = root_build_file.read_text()
+        if re.search(r"\bament_package\s*\(", root_build):
+            patterns.append(f"@{module_name}//:ament_package")
+        else:
+            patterns.append(f"@{module_name}//:all")
+        if re.search(r"\bdefault_generators\s*\(", root_build):
+            patterns.extend(
+                f"@{module_name}//:{target}"
+                for target in GENERATED_ROOT_TARGETS
+            )
+
+    for build_file in sorted(overlay_dir.rglob("BUILD.bazel")):
+        package = build_file.parent.relative_to(overlay_dir)
+        if str(package) == ".":
+            continue
+        if SKIPPED_OVERLAY_PACKAGE_PARTS.intersection(package.parts):
+            continue
+        if INTERFACE_PACKAGE_PARTS.intersection(package.parts):
+            patterns.append(f"@{module_name}//{package}:all")
+    return patterns
+
+
+def _is_gui_related(
+    package: str,
+    apt_packages: Dict[str, List[str]],
+    seen: Set[str] | None = None,
+) -> bool:
+    if seen is None:
+        seen = set()
+    if package in seen:
+        return False
+    seen.add(package)
+
+    if package.endswith("-dbgsym"):
+        return True
+    short_name = package.split("-", 2)[-1]
+    if GUI_PACKAGE_RE.search(short_name):
+        return True
+    return any(
+        _is_gui_related(dep, apt_packages, seen)
+        for dep in apt_packages.get(package, [])
+    )
+
+
+def _is_module_gui_related(
+    modules_dir: Path,
+    module_name: str,
+    release_packages: Dict[str, str],
+    cache: Dict[str, bool],
+    seen: Set[str] | None = None,
+) -> bool:
+    if module_name in cache:
+        return cache[module_name]
+    if seen is None:
+        seen = set()
+    if module_name in seen:
+        return False
+    seen.add(module_name)
+
+    if GUI_PACKAGE_RE.search(module_name.replace("_", "-")):
+        cache[module_name] = True
+        return True
+
+    version = release_packages.get(module_name)
+    if version is None:
+        cache[module_name] = False
+        return False
+    module_dot_bazel = modules_dir / module_name / version / "MODULE.bazel"
+    if not module_dot_bazel.exists():
+        cache[module_name] = False
+        return False
+
+    deps = scan_module_for_dependencies(module_dot_bazel, modules_dir)
+    cache[module_name] = any(
+        _is_module_gui_related(
+            modules_dir, dep_name, release_packages, cache, seen
+        )
+        for dep_name in deps
+    )
+    return cache[module_name]
+
+
+def calculate_packages_for_apt_slice(
+    modules_dir: Path,
+    module_names: Set[str],
+    release_packages: Dict[str, str],
+    apt_packages: Dict[str, List[str]],
+    ros_distro: str,
+    slice_name: str,
+    provided_packages: Set[str] | None = None,
+) -> List[str]:
+    package_re = APT_SLICES[slice_name]
+    provided_packages = provided_packages or set()
+    packages: Set[str] = set()
+    missing: Set[str] = set()
+    skipped_gui = 0
+    skipped_targetless = 0
+    provided_external = 0
+    gui_module_cache: Dict[str, bool] = {}
+
+    for package in sorted(apt_packages):
+        short_name = package.removeprefix(f"ros-{ros_distro}-")
+        if not package_re.search(short_name):
+            continue
+        if _is_gui_related(package, apt_packages):
+            skipped_gui += 1
+            continue
+
+        module_name = _apt_to_module_name(package, ros_distro)
+        if _is_module_gui_related(
+            modules_dir, module_name, release_packages, gui_module_cache
+        ):
+            skipped_gui += 1
+            continue
+        if module_name in module_names and module_name in release_packages:
+            if not _has_target_roots(modules_dir, module_name, release_packages[module_name]):
+                skipped_targetless += 1
+                continue
+            packages.add(module_name)
+        elif module_name in provided_packages:
+            provided_external += 1
+        else:
+            missing.add(module_name)
+
+    if missing:
+        print(
+            f"Warning: apt slice '{slice_name}' has {len(missing)} packages without RCR modules: "
+            + ", ".join(sorted(missing))
+        )
+    print(
+        f"  apt:{slice_name}: {len(packages)} RCR packages "
+        f"({len(missing)} missing, {skipped_gui} GUI/debug skipped, "
+        f"{skipped_targetless} targetless skipped, "
+        f"{provided_external} external provided)"
+    )
+    return sorted(packages)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Setup a Bazel workspace for testing ROS distributions in CI."
@@ -258,6 +472,22 @@ def main():
         type=Path,
         default=Path("workspace"),
         help="Directory to create the workspace in",
+    )
+    parser.add_argument(
+        "--apt-distro",
+        default="resolute",
+        help="Ubuntu distro to read ROS buildfarm apt packages from, e.g. resolute",
+    )
+    parser.add_argument(
+        "--apt-architecture",
+        default="amd64",
+        help="Architecture to read ROS buildfarm apt packages from, e.g. amd64",
+    )
+    parser.add_argument(
+        "--apt-slice",
+        action="append",
+        choices=sorted(APT_SLICES),
+        help="Also generate a target-pattern config from ros-<distro>-* apt packages",
     )
     args = parser.parse_args()
 
@@ -293,6 +523,41 @@ def main():
         )
         print(f"  {variant_name}: {len(variants[variant_name])} packages")
 
+    if args.apt_slice:
+        apt_packages = _fetch_apt_packages(
+            workspace_root / ".cache" / "apt",
+            args.apt_distro,
+            args.apt_architecture,
+            args.release.split(".")[0],
+        )
+        module_names = {p.name for p in modules_dir.iterdir() if p.is_dir()}
+        provided_packages = scan_module_for_dependencies(
+            ros_module_dir / "MODULE.bazel",
+            modules_dir,
+            include_rcr=False,
+            include_bcr=True,
+        )
+        rosdistro_version = packages.get("rosdistro")
+        if rosdistro_version:
+            provided_packages.update(
+                scan_module_for_dependencies(
+                    modules_dir / "rosdistro" / rosdistro_version / "MODULE.bazel",
+                    modules_dir,
+                    include_rcr=False,
+                    include_bcr=True,
+                )
+            )
+        for apt_slice in args.apt_slice:
+            variants[apt_slice] = calculate_packages_for_apt_slice(
+                modules_dir,
+                module_names,
+                packages,
+                apt_packages,
+                args.release.split(".")[0],
+                apt_slice,
+                set(provided_packages),
+            )
+
     # Create workspace directory
     target_workspace = (workspace_root / args.workspace_dir).resolve()
     target_workspace.mkdir(parents=True, exist_ok=True)
@@ -305,7 +570,17 @@ def main():
     # Write ros-<variant>.txt files
     for variant_name, variant_packages in variants.items():
         with open(target_workspace / f"ros-{variant_name}.txt", "w") as f:
-            f.write("\n".join([f"@{p}//..." for p in variant_packages]))
+            if args.apt_slice and variant_name in args.apt_slice:
+                target_patterns = [
+                    pattern
+                    for package in variant_packages
+                    for pattern in _target_patterns_for_package(
+                        modules_dir, package, packages[package]
+                    )
+                ]
+            else:
+                target_patterns = [f"@{p}//..." for p in variant_packages]
+            f.write("\n".join(target_patterns))
 
     # Write MODULE.bazel
     with open(target_workspace / "MODULE.bazel", "w") as f:
@@ -414,12 +689,12 @@ rust.toolchain(
 
     # Write .bazelrc
     distro = args.release.split(".")[0]
-    variants = "\n".join(
+    variant_configs = "\n".join(
         f"common:{variant_name} --target_pattern_file=ros-{variant_name}.txt"
-        for variant_name in VARIANTS
+        for variant_name in variants
     )
     with open(target_workspace / ".bazelrc", "w") as f:
-        f.write(BAZELRC_TEMPLATE.format(distro=distro, variants=variants))
+        f.write(BAZELRC_TEMPLATE.format(distro=distro, variants=variant_configs))
 
     print("Workspace setup complete.")
 

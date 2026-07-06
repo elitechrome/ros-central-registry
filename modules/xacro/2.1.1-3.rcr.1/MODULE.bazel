@@ -35,6 +35,7 @@ bazel_dep(name = "rules_python", version = "1.9.0")
 bazel_dep(name = "rules_qt", version = "0.0.6")
 bazel_dep(name = "rules_rs", version = "0.0.56")
 bazel_dep(name = "rules_rust", version = "0.69.0")
+bazel_dep(name = "rules_license", version = "1.0.0")
 bazel_dep(name = "rules_shell", version = "0.7.1")
 
 # RCR Dependencies

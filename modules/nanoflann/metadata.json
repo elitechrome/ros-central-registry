@@ -1,0 +1,13 @@
+{
+    "homepage": "https://github.com/jlblancoc/nanoflann",
+    "maintainers": [
+        {
+            "email": "joseluisblancoc@gmail.com",
+            "name": "Jose-Luis Blanco-Claraco"
+        }
+    ],
+    "versions": [
+        "1.10.1-1.rcr.1"
+    ],
+    "yanked_versions": {}
+}

@@ -1,5 +1,10 @@
 {
     "integrity": "sha256-28RIstmU3MqwpfbUwshukZPh6yC/4Sbe5oKOpAl9jI0=",
     "url": "https://github.com/ros2-gbp/mrpt_sensors-release/archive/refs/tags/release/lyrical/novatel_oem6_msgs/0.3.0-1.tar.gz",
-    "strip_prefix": "mrpt_sensors-release-release-lyrical-novatel_oem6_msgs-0.3.0-1"
+    "strip_prefix": "mrpt_sensors-release-release-lyrical-novatel_oem6_msgs-0.3.0-1",
+    "overlay": {
+        "BUILD.bazel": "sha256-3u2KozT+/VTsflhcEu/MDv6tcmXEGdUDSloV+5P1tDQ=",
+        "msg/BUILD.bazel": "sha256-2PHXSFMHmEpHR70JDpWDg+8LcYe93cDQsukqPwDaGGI=",
+        "srv/BUILD.bazel": "sha256-8HURWSJGD17dtlYTXeNSHmUeOGmvLrUA+pZeDe+U/k0="
+    }
 }

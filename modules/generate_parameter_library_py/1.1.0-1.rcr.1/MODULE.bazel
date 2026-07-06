@@ -38,6 +38,7 @@ bazel_dep(name = "rules_rust", version = "0.69.0")
 bazel_dep(name = "rules_shell", version = "0.7.1")
 
 # RCR Dependencies
+bazel_dep(name = "ament_copyright", version = "0.20.6-1.rcr.1")
 bazel_dep(name = "rosdistro", version = "lyrical.2026-06-08.rcr.1")
 
 # Setup Python

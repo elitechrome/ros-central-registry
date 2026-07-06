@@ -1,0 +1,10 @@
+{
+    "integrity": "sha256-DkgRe7PSsMLnr1fmJHS//j1GRL86oVJMFwWB9NgN88s=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-msgs/ros-lyrical-ros2-medkit-msgs_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-msgs-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-lqBTsLtDpNWG9xYamxitA9cwHJm5QCgjzgUbbFfFNWM=",
+        "msg/BUILD.bazel": "sha256-llg8/Qjh3jWMarK8vTK7dB/1sWa+w6LM3loimglY1zM=",
+        "srv/BUILD.bazel": "sha256-mLnTD2ypu1Sp5428UmUArXhu6SGpROZSLdov6MiYAM4="
+    }
+}

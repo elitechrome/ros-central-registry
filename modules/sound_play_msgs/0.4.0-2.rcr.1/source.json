@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-5gCQpftz9Dny65A8idkJh3yj7TA6ZCGOY/my7pr2yX4=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-sound-play-msgs/ros-lyrical-sound-play-msgs_0.4.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-sound-play-msgs-0.4.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-Xj75W3WoqQUEGRU8vaEEK5xaC7tphR5y8mC/ORXx0iM=",
+        "msg/BUILD.bazel": "sha256-qbbxbmBrzY0VsCumup7CW0MHeudfpgwlQ216MDmNwzo="
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "homepage": "https://index.ros.org/p/ros2_medkit_diagnostic_bridge/#lyrical",
+    "maintainers": [
+        {
+            "email": "michal.faferek@selfpatch.ai",
+            "name": "mfaferek93"
+        }
+    ],
+    "versions": [
+        "0.5.0-3.rcr.1"
+    ],
+    "yanked_versions": {}
+}

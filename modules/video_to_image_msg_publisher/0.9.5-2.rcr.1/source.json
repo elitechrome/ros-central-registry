@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-v2BGcSPmwqw3A2N/xx+F5b40PDsYp5qGZiyAp4BADNw=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-video-to-image-msg-publisher/ros-lyrical-video-to-image-msg-publisher_0.9.5.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-video-to-image-msg-publisher-0.9.5",
+    "overlay": {
+        "BUILD.bazel": "sha256-Ak/vz9vhBLlVdVsTSTSQlN2ZkvoV2QGhe5koM4bLDss="
+    }
+}

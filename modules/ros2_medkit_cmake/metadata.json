@@ -1,0 +1,13 @@
+{
+    "homepage": "https://index.ros.org/p/ros2_medkit_cmake/#lyrical",
+    "maintainers": [
+        {
+            "email": "bartoszburda93@gmail.com",
+            "name": "bburda"
+        }
+    ],
+    "versions": [
+        "0.5.0-3.rcr.1"
+    ],
+    "yanked_versions": {}
+}

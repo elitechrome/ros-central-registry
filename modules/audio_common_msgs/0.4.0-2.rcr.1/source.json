@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-tknAecVSh1V8i8uSHq7snRyuKOim8NnhSkMKtHDeUak=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-audio-common-msgs/ros-lyrical-audio-common-msgs_0.4.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-audio-common-msgs-0.4.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-HU2S6Rbhm29Nf8SbQRVWL+u427akOMBudyTZbWdLMxc=",
+        "msg/BUILD.bazel": "sha256-0bOICvuG9GOAeGEUFVTHFbNpY2P/GDofGUEpzFHaG/c="
+    }
+}

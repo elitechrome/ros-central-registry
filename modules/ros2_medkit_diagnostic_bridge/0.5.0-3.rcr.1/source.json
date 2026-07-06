@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-Xbpqfc1XPdgGPoOk7hQ5gso9rvFAMVfSi+TCy4kQuJc=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-diagnostic-bridge/ros-lyrical-ros2-medkit-diagnostic-bridge_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-diagnostic-bridge-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-hyOqqyvVnyOwlRTr63KM5mVbarDh2xoZmE+mJdcte0o="
+    }
+}
