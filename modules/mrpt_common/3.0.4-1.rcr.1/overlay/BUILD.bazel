@@ -13,8 +13,18 @@
 # limitations under the License.
 
 load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rules_cc//cc:defs.bzl", "cc_library")
 
 package(default_visibility = ["//visibility:public"])
+
+### TESTING
+
+cc_library(
+    name = "common_headers",
+    testonly = True,
+    hdrs = glob(["common_headers/*.h"]),
+    includes = ["common_headers"],
+)
 
 ### PACKAGING
 

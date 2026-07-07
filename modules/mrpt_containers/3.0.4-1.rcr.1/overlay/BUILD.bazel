@@ -1,0 +1,271 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@aspect_rules_py//py:defs.bzl", "py_library")
+load("@cmake_configure_file//:cmake_configure_file.bzl", "cmake_configure_file")
+load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps")
+load("@rosdistro//python:defs.bzl", "py_pytest")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_shared_library", "cc_test")
+
+package(default_visibility = ["//visibility:public"])
+
+### PREPROCESSING
+
+cmake_configure_file(
+    name = "containers_config_h",
+    src = "config.h.in",
+    out = "include/mrpt/containers/config.h",
+    defines = [
+        "CMAKE_MRPT_HAS_LIBFYAML=1",
+        "CMAKE_MRPT_HAS_LIBFYAML_SYSTEM=0",
+    ],
+)
+
+cmake_configure_file(
+    name = "libfyaml_config_h",
+    src = "3rdparty/libfyaml/cmake/config.h.in",
+    out = "3rdparty/libfyaml/config.h",
+    defines = [
+        "HAVE_ALLOCA_H=1",
+        "HAVE_BYTESWAP_H=1",
+        "HAVE___BUILTIN_BSWAP16=1",
+        "HAVE___BUILTIN_BSWAP32=1",
+        "HAVE___BUILTIN_BSWAP64=1",
+        "HAVE_QSORT_R=1",
+        "HAVE_MREMAP=1",
+        "HAVE_DECL_ENVIRON=1",
+        "TARGET_HAS_SSE2=0",
+        "TARGET_HAS_SSE41=0",
+        "TARGET_HAS_AVX2=0",
+        "TARGET_HAS_AVX512=0",
+        "TARGET_HAS_NEON=0",
+        "HAVE_LIBCLANG=0",
+        "HAVE_HEAP_TRAMPOLINES=0",
+        "PROJECT_VERSION=1.0.0-alpha6",
+    ],
+)
+
+### LIBRARIES
+
+LIBFYAML_HEADERS = glob([
+    "3rdparty/libfyaml/include/**/*.h",
+    "3rdparty/libfyaml/src/allocator/*.h",
+    "3rdparty/libfyaml/src/blake3/*.h",
+    "3rdparty/libfyaml/src/lib/*.h",
+    "3rdparty/libfyaml/src/thread/*.h",
+    "3rdparty/libfyaml/src/util/*.h",
+    "3rdparty/libfyaml/src/valgrind/*.h",
+    "3rdparty/libfyaml/src/xxhash/*.h",
+])
+
+cc_library(
+    name = "libfyaml",
+    srcs = [
+        "3rdparty/libfyaml/src/allocator/fy-allocator-auto.c",
+        "3rdparty/libfyaml/src/allocator/fy-allocator-dedup.c",
+        "3rdparty/libfyaml/src/allocator/fy-allocator-linear.c",
+        "3rdparty/libfyaml/src/allocator/fy-allocator-malloc.c",
+        "3rdparty/libfyaml/src/allocator/fy-allocator-mremap.c",
+        "3rdparty/libfyaml/src/allocator/fy-allocator.c",
+        "3rdparty/libfyaml/src/blake3/blake3_backend.c",
+        "3rdparty/libfyaml/src/blake3/blake3_be_cpusimd.c",
+        "3rdparty/libfyaml/src/blake3/blake3_host_state.c",
+        "3rdparty/libfyaml/src/blake3/blake3_portable.c",
+        "3rdparty/libfyaml/src/blake3/blake3.c",
+        "3rdparty/libfyaml/src/blake3/fy-blake3.c",
+        "3rdparty/libfyaml/src/lib/fy-accel.c",
+        "3rdparty/libfyaml/src/lib/fy-atom.c",
+        "3rdparty/libfyaml/src/lib/fy-cache.c",
+        "3rdparty/libfyaml/src/lib/fy-composer-diag.c",
+        "3rdparty/libfyaml/src/lib/fy-composer.c",
+        "3rdparty/libfyaml/src/lib/fy-diag.c",
+        "3rdparty/libfyaml/src/lib/fy-doc-diag.c",
+        "3rdparty/libfyaml/src/lib/fy-doc.c",
+        "3rdparty/libfyaml/src/lib/fy-docbuilder-diag.c",
+        "3rdparty/libfyaml/src/lib/fy-docbuilder.c",
+        "3rdparty/libfyaml/src/lib/fy-docstate.c",
+        "3rdparty/libfyaml/src/lib/fy-dump.c",
+        "3rdparty/libfyaml/src/lib/fy-emit.c",
+        "3rdparty/libfyaml/src/lib/fy-event.c",
+        "3rdparty/libfyaml/src/lib/fy-input-diag.c",
+        "3rdparty/libfyaml/src/lib/fy-input.c",
+        "3rdparty/libfyaml/src/lib/fy-parse-diag.c",
+        "3rdparty/libfyaml/src/lib/fy-parse.c",
+        "3rdparty/libfyaml/src/lib/fy-path.c",
+        "3rdparty/libfyaml/src/lib/fy-token.c",
+        "3rdparty/libfyaml/src/lib/fy-types.c",
+        "3rdparty/libfyaml/src/lib/fy-walk.c",
+        "3rdparty/libfyaml/src/thread/fy-thread.c",
+        "3rdparty/libfyaml/src/util/fy-blob.c",
+        "3rdparty/libfyaml/src/util/fy-ctype.c",
+        "3rdparty/libfyaml/src/util/fy-utf8.c",
+        "3rdparty/libfyaml/src/util/fy-utils.c",
+        "3rdparty/libfyaml/src/xxhash/xxhash.c",
+    ],
+    hdrs = [
+        ":libfyaml_config_h",
+    ] + LIBFYAML_HEADERS,
+    copts = [
+        "-std=gnu11",
+        "-fvisibility=hidden",
+    ],
+    includes = [
+        "3rdparty/libfyaml",
+        "3rdparty/libfyaml/include",
+        "3rdparty/libfyaml/src/allocator",
+        "3rdparty/libfyaml/src/blake3",
+        "3rdparty/libfyaml/src/generic",
+        "3rdparty/libfyaml/src/lib",
+        "3rdparty/libfyaml/src/reflection",
+        "3rdparty/libfyaml/src/thread",
+        "3rdparty/libfyaml/src/util",
+        "3rdparty/libfyaml/src/valgrind",
+        "3rdparty/libfyaml/src/xxhash",
+    ],
+    linkopts = select({
+        "@platforms//os:linux": [
+            "-lm",
+            "-pthread",
+        ],
+        "//conditions:default": [],
+    }),
+    local_defines = [
+        "HASHER_SUFFIX=portable",
+        "HAVE_CONFIG_H",
+        "NDEBUG",
+        "SIMD_DEGREE=1",
+        "_GNU_SOURCE",
+    ],
+)
+
+HEADERS = [
+    ":containers_config_h",
+] + glob(["include/**/*.h"])
+
+cc_library(
+    name = "mrpt_containers_library",
+    srcs = [
+        "src/CDynamicGrid.cpp",
+        "src/ts_hash_map.cpp",
+        "src/yaml.cpp",
+    ],
+    hdrs = HEADERS,
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    local_defines = ["MRPT_LIBFYAML_VERSION=0x010000"],
+    deps = [
+        ":libfyaml",
+        "@mrpt_core//:mrpt_core_library",
+        "@mrpt_typemeta//:mrpt_typemeta",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_containers",
+    dynamic_deps = ["@mrpt_core//:mrpt_core"],
+    exports_filter = [":mrpt_containers_library"],
+    deps = [":mrpt_containers_library"],
+)
+
+### PYTHON MODULES
+
+cc_library(
+    name = "mrpt_containers_py_bindings_library",
+    srcs = ["python_bindings/mrpt_containers_py.cpp"],
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":mrpt_containers_library",
+        "@rosdistro//cc:pybind11",
+        "@rules_python//python/cc:current_py_cc_headers",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_containers_py_bindings",
+    dynamic_deps = [
+        ":mrpt_containers",
+        "@mrpt_core//:mrpt_core",
+    ],
+    exports_filter = [":mrpt_containers_py_bindings_library"],
+    shared_lib_name = "mrpt/containers/_bindings.so",
+    user_link_flags = select({
+        "@platforms//os:osx": [
+            "-undefined",
+            "dynamic_lookup",
+        ],
+        "//conditions:default": [],
+    }),
+    visibility = ["//visibility:private"],
+    deps = [":mrpt_containers_py_bindings_library"],
+)
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps",
+    dynamic_deps = [":mrpt_containers"],
+    visibility = ["//visibility:private"],
+)
+
+py_library(
+    name = "mrpt_containers_py",
+    srcs = glob(["python/mrpt/**/*.py"]),
+    data = [
+        ":mrpt_containers",
+        ":mrpt_containers_py_bindings",
+        ":transitive_dynamic_deps",
+    ],
+    imports = ["python"],
+)
+
+### TESTING
+
+cc_test(
+    name = "test_mrpt_containers",
+    srcs = glob(["tests/*_unittest.cpp"]),
+    dynamic_deps = [":transitive_dynamic_deps"],
+    deps = [
+        ":mrpt_containers_library",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@mrpt_common//:common_headers",
+    ],
+)
+
+py_pytest(
+    name = "test_python_containers",
+    srcs = ["tests/python_containers_test.py"],
+    deps = [
+        ":mrpt_containers_py",
+        "@rules_python//python/runfiles",
+    ],
+)
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    headers = HEADERS,
+    libraries = [":mrpt_containers"],
+    package_xml = "package.xml",
+    deps = [
+        "@ament_cmake//:ament_package",
+        "@ament_cmake_python//:ament_package",
+        "@mrpt_common//:ament_package",
+        "@mrpt_core//:ament_package",
+        "@mrpt_typemeta//:ament_package",
+        "@rosdistro//:ament_package",
+    ],
+)

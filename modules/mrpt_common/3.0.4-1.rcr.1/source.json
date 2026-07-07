@@ -3,6 +3,6 @@
     "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-mrpt-common/ros-lyrical-mrpt-common_3.0.4.orig.tar.gz",
     "strip_prefix": "ros-lyrical-mrpt-common-3.0.4",
     "overlay": {
-        "BUILD.bazel": "sha256-SmrwauDVh7k/AhwCSabfBCM/6SxQp8xqwOpllL1EVZ4="
+        "BUILD.bazel": "sha256-ydIgE2/GcEuvQHvWR5TBXP2Hh7yEj2bdngBjquAZHsk="
     }
 }
