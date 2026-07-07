@@ -1,0 +1,185 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@aspect_rules_py//py:defs.bzl", "py_library")
+load("@cmake_configure_file//:cmake_configure_file.bzl", "cmake_configure_file")
+load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps")
+load("@rosdistro//python:defs.bzl", "py_pytest")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_shared_library", "cc_test")
+
+package(default_visibility = ["//visibility:public"])
+
+### PREPROCESSING
+
+cmake_configure_file(
+    name = "config_h",
+    src = "config.h.in",
+    out = "include/mrpt/system/config.h",
+    defines = [
+        "CMAKE_INSTALL_PREFIX=",
+        "CMAKE_MRPT_HAS_INOTIFY=1",
+        "MRPT_CURRENT_SOURCE_DIR=",
+    ],
+)
+
+### LIBRARIES
+
+HEADERS = [
+    ":config_h",
+] + glob(["include/**/*.h"])
+
+cc_library(
+    name = "mrpt_system_library",
+    srcs = [
+        "src/base64.cpp",
+        "src/CControlledRateTimer.cpp",
+        "src/CDirectoryExplorer.cpp",
+        "src/CFileSystemWatcher.cpp",
+        "src/CObservable.cpp",
+        "src/CObserver.cpp",
+        "src/COutputLogger.cpp",
+        "src/CRateTimer.cpp",
+        "src/crc.cpp",
+        "src/CTicTac.cpp",
+        "src/CTimeLogger.cpp",
+        "src/datetime.cpp",
+        "src/filesystem.cpp",
+        "src/hyperlink.cpp",
+        "src/md5.cpp",
+        "src/memory.cpp",
+        "src/os.cpp",
+        "src/progress.cpp",
+        "src/scheduler.cpp",
+        "src/string_utils.cpp",
+        "src/thread_name.cpp",
+    ],
+    hdrs = HEADERS,
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    linkopts = select({
+        "@platforms//os:linux": [
+            "-ldl",
+            "-pthread",
+        ],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "@mrpt_containers//:mrpt_containers_library",
+        "@mrpt_core//:mrpt_core_library",
+        "@mrpt_typemeta//:mrpt_typemeta",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_system",
+    dynamic_deps = [
+        "@mrpt_containers//:mrpt_containers",
+        "@mrpt_core//:mrpt_core",
+    ],
+    exports_filter = [":mrpt_system_library"],
+    deps = [":mrpt_system_library"],
+)
+
+### PYTHON MODULES
+
+cc_library(
+    name = "mrpt_system_py_bindings_library",
+    srcs = ["python_bindings/mrpt_system_py.cpp"],
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":mrpt_system_library",
+        "@rosdistro//cc:pybind11",
+        "@rules_python//python/cc:current_py_cc_headers",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_system_py_bindings",
+    dynamic_deps = [
+        ":mrpt_system",
+        "@mrpt_containers//:mrpt_containers",
+        "@mrpt_core//:mrpt_core",
+    ],
+    exports_filter = [":mrpt_system_py_bindings_library"],
+    shared_lib_name = "mrpt/system/_bindings.so",
+    user_link_flags = select({
+        "@platforms//os:osx": [
+            "-undefined",
+            "dynamic_lookup",
+        ],
+        "//conditions:default": [],
+    }),
+    visibility = ["//visibility:private"],
+    deps = [":mrpt_system_py_bindings_library"],
+)
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps",
+    dynamic_deps = [":mrpt_system"],
+    visibility = ["//visibility:private"],
+)
+
+py_library(
+    name = "mrpt_system_py",
+    srcs = glob(["python/mrpt/**/*.py"]),
+    data = [
+        ":mrpt_system",
+        ":mrpt_system_py_bindings",
+        ":transitive_dynamic_deps",
+    ],
+    imports = ["python"],
+)
+
+### TESTING
+
+cc_test(
+    name = "test_mrpt_system",
+    srcs = glob(["tests/*_unittest.cpp"]),
+    dynamic_deps = [":transitive_dynamic_deps"],
+    deps = [
+        ":mrpt_system_library",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+py_pytest(
+    name = "test_python_system",
+    srcs = ["tests/python_system_test.py"],
+    deps = [
+        ":mrpt_system_py",
+        "@rules_python//python/runfiles",
+    ],
+)
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    headers = HEADERS,
+    libraries = [":mrpt_system"],
+    package_xml = "package.xml",
+    deps = [
+        "@ament_cmake//:ament_package",
+        "@ament_cmake_python//:ament_package",
+        "@mrpt_common//:ament_package",
+        "@mrpt_containers//:ament_package",
+        "@mrpt_core//:ament_package",
+        "@mrpt_typemeta//:ament_package",
+        "@rosdistro//:ament_package",
+    ],
+)
