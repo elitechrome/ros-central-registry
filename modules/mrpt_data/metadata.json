@@ -1,0 +1,13 @@
+{
+    "homepage": "https://github.com/MRPT/",
+    "maintainers": [
+        {
+            "email": "joseluisblancoc@gmail.com",
+            "name": "Jose-Luis Blanco-Claraco"
+        }
+    ],
+    "versions": [
+        "3.0.4-1.rcr.1"
+    ],
+    "yanked_versions": {}
+}
