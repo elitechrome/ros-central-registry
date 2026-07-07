@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-KZXZTmk9Xzcnqbl48pOQtOLf+PkHgY9E4QapStrDS1Q=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-mrpt-config/ros-lyrical-mrpt-config_3.0.4.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-mrpt-config-3.0.4",
+    "overlay": {
+        "BUILD.bazel": "sha256-Yk4A3ONlHtIroxMdkEFNOcHiz0rKB9k66QUjjNJ8UxI="
+    }
+}
