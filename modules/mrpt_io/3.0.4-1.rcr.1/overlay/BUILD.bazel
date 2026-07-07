@@ -1,0 +1,159 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@aspect_rules_py//py:defs.bzl", "py_library")
+load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps")
+load("@rosdistro//python:defs.bzl", "py_pytest")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_shared_library", "cc_test")
+
+package(default_visibility = ["//visibility:public"])
+
+### LIBRARIES
+
+HEADERS = glob(["include/**/*.h"])
+
+DEPENDENCIES = {
+    "@mrpt_core//:mrpt_core": "@mrpt_core//:mrpt_core_library",
+    "@mrpt_system//:mrpt_system": "@mrpt_system//:mrpt_system_library",
+    "@rosdistro//cc:zlib": "@rosdistro//cc:zlib_library",
+    "@rosdistro//cc:zstd": "@rosdistro//cc:zstd_library",
+}
+
+cc_library(
+    name = "mrpt_io_library",
+    srcs = [
+        "src/CCompressedInputStream.cpp",
+        "src/CCompressedOutputStream.cpp",
+        "src/CFileGZInputStream.cpp",
+        "src/CFileGZOutputStream.cpp",
+        "src/CFileInputStream.cpp",
+        "src/CFileOutputStream.cpp",
+        "src/CFileStream.cpp",
+        "src/CMemoryStream.cpp",
+        "src/CPipe.cpp",
+        "src/CStream.cpp",
+        "src/CTextFileLinesParser.cpp",
+        "src/detect_compression.cpp",
+        "src/lazy_load_path.cpp",
+        "src/vector_loadsave.cpp",
+        "src/zip.cpp",
+    ],
+    hdrs = HEADERS,
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    deps = DEPENDENCIES.values(),
+)
+
+cc_shared_library(
+    name = "mrpt_io",
+    dynamic_deps = [
+        "@mrpt_containers//:mrpt_containers",
+    ] + DEPENDENCIES.keys(),
+    exports_filter = [":mrpt_io_library"],
+    deps = [":mrpt_io_library"],
+)
+
+### PYTHON MODULES
+
+cc_library(
+    name = "mrpt_io_py_bindings_library",
+    srcs = ["python_bindings/mrpt_io_py.cpp"],
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":mrpt_io_library",
+        "@rosdistro//cc:pybind11",
+        "@rules_python//python/cc:current_py_cc_headers",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_io_py_bindings",
+    dynamic_deps = [
+        ":mrpt_io",
+        "@mrpt_containers//:mrpt_containers",
+    ] + DEPENDENCIES.keys(),
+    exports_filter = [":mrpt_io_py_bindings_library"],
+    shared_lib_name = "mrpt/io/_bindings.so",
+    user_link_flags = select({
+        "@platforms//os:osx": [
+            "-undefined",
+            "dynamic_lookup",
+        ],
+        "//conditions:default": [],
+    }),
+    visibility = ["//visibility:private"],
+    deps = [":mrpt_io_py_bindings_library"],
+)
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps",
+    dynamic_deps = [":mrpt_io"],
+    visibility = ["//visibility:private"],
+)
+
+py_library(
+    name = "mrpt_io_py",
+    srcs = glob(["python/mrpt/**/*.py"]),
+    data = [
+        ":mrpt_io",
+        ":mrpt_io_py_bindings",
+        ":transitive_dynamic_deps",
+    ],
+    imports = ["python"],
+)
+
+### TESTING
+
+cc_test(
+    name = "test_mrpt_io",
+    srcs = glob(
+        ["tests/*_unittest.cpp"],
+        exclude = ["tests/vector_loadsave_unittest.cpp"],
+    ),
+    dynamic_deps = [":transitive_dynamic_deps"],
+    deps = [
+        ":mrpt_io_library",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+py_pytest(
+    name = "test_python_io",
+    srcs = ["tests/python_io_test.py"],
+    deps = [
+        ":mrpt_io_py",
+        "@rules_python//python/runfiles",
+    ],
+)
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    headers = HEADERS,
+    libraries = [":mrpt_io"],
+    package_xml = "package.xml",
+    deps = [
+        "@ament_cmake//:ament_package",
+        "@ament_cmake_python//:ament_package",
+        "@mrpt_common//:ament_package",
+        "@mrpt_core//:ament_package",
+        "@mrpt_system//:ament_package",
+        "@rosdistro//:ament_package",
+    ],
+)
