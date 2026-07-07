@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-VZyleOFxSuAr8/aC0gsVfHdjlLEp2n32PqkQd4tR7XQ=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-mrpt-bayes/ros-lyrical-mrpt-bayes_3.0.4.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-mrpt-bayes-3.0.4",
+    "overlay": {
+        "BUILD.bazel": "sha256-nBooBz80deg7e9QgVT76vXckd8CnNK8JkU9ehKECO7o="
+    }
+}
