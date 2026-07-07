@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-KSufGZJDcQuS0kCLHThTtVoReJbFW+TOdfTK6JQeiUo=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-mrpt-math/ros-lyrical-mrpt-math_3.0.4.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-mrpt-math-3.0.4",
+    "overlay": {
+        "BUILD.bazel": "sha256-RCcz1AbLSRRZxiplOilmjqIpndEEnVoqdq+wkWkldIg="
+    }
+}
