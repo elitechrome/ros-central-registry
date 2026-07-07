@@ -1,0 +1,13 @@
+{
+    "integrity": "sha256-vX/7wgHIqe0LOwBG0JQYv6+0SAPImh1DUPo42rhLurw=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ds-dbw-can/ros-lyrical-ds-dbw-can_2.4.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ds-dbw-can-2.4.0",
+    "patch_strip": 1,
+    "overlay": {
+        "BUILD.bazel": "sha256-VBFVcTFSIxvayNuau1KJSGtrlaxM6c7FMMqUyzNdpbA="
+    },
+    "patches": {
+        "src__CanSocket__cpp.patch": "sha256-0ZYjepFwPwVJNARP4JPNNacj8BemhrLjatiXosG1pU0=",
+        "src__DbwNode__cpp.patch": "sha256-2bQaMeTTiw3jcR9TgiU3q0uFDdq+DCN/L+YhoFiuxzA="
+    }
+}

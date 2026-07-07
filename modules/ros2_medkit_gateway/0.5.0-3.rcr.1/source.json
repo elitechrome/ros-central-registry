@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-lc1dVigZFYH8phTjuBciDyxourgGg4TKuI/j9N1UGxU=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-gateway/ros-lyrical-ros2-medkit-gateway_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-gateway-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-rojgZImGDJIDwRYwB1QU1JV9NL1hApuTW0wphD9QxvI=",
+        "include/rclcpp/version.h": "sha256-jPZt2evN+SoDEr+pCLMFjrtRjh0iWAPC+B1jnAcmpEI="
+    }
+}

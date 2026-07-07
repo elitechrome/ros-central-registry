@@ -1,0 +1,20 @@
+{
+    "homepage": "https://index.ros.org/p/ros2_medkit_sovd_service_interface/#lyrical",
+    "maintainers": [
+        {
+            "email": "bartoszburda93@gmail.com",
+            "name": "bburda"
+        },
+        {
+            "email": "michal.faferek@selfpatch.ai",
+            "name": "mfaferek93"
+        }
+    ],
+    "repository": [
+        "https://github.com/selfpatch/ros2_medkit.git"
+    ],
+    "versions": [
+        "0.5.0-3.rcr.1"
+    ],
+    "yanked_versions": {}
+}

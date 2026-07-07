@@ -1,0 +1,99 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps", "ros_local_defines")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+HEADERS = glob(["include/**/*.hpp"])
+
+PACKAGE_DATA = glob([
+    "config/**",
+    "launch/**",
+])
+
+DEPENDENCIES = {
+    "@rclcpp//:rclcpp": "@rclcpp//:rclcpp_library",
+    "@rcutils//:rcutils": "@rcutils//:rcutils_library",
+    "@ros2_medkit_serialization//:ros2_medkit_serialization": "@ros2_medkit_serialization//:ros2_medkit_serialization_library",
+    "@rosbag2_cpp//:rosbag2_cpp": "@rosbag2_cpp//:rosbag2_cpp_library",
+    "@rosbag2_storage//:rosbag2_storage": "@rosbag2_storage//:rosbag2_storage_library",
+    "@rosdistro//cc:sqlite3": "@rosdistro//cc:sqlite3_library",
+    "@rosdistro//cc:yaml-cpp": "@rosdistro//cc:yaml-cpp_library",
+}
+
+cc_library(
+    name = "fault_manager_lib_library",
+    srcs = [
+        "src/correlation/config_parser.cpp",
+        "src/correlation/correlation_engine.cpp",
+        "src/correlation/pattern_matcher.cpp",
+        "src/correlation/types.cpp",
+        "src/entity_threshold_resolver.cpp",
+        "src/fault_manager_node.cpp",
+        "src/fault_storage.cpp",
+        "src/rosbag_capture.cpp",
+        "src/snapshot_capture.cpp",
+        "src/sqlite_fault_storage.cpp",
+    ],
+    hdrs = HEADERS,
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    local_defines = ros_local_defines(),
+    deps = DEPENDENCIES.values() + [
+        "@nlohmann_json//:singleheader-json",
+        "@ros2_medkit_msgs//:cc",
+    ],
+)
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps",
+    dynamic_deps = DEPENDENCIES.keys(),
+    visibility = ["//visibility:private"],
+)
+
+cc_binary(
+    name = "fault_manager_node",
+    srcs = ["src/main.cpp"],
+    dynamic_deps = [":transitive_dynamic_deps"],
+    local_defines = ros_local_defines(),
+    deps = [
+        ":fault_manager_lib_library",
+    ],
+)
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    data = PACKAGE_DATA,
+    executables = [":fault_manager_node"],
+    headers = HEADERS,
+    package_xml = "package.xml",
+    deps = [
+        "@ament_cmake//:ament_package",
+        "@rclcpp//:ament_package",
+        "@ros2_medkit_cmake//:ament_package",
+        "@ros2_medkit_msgs//:ament_package",
+        "@ros2_medkit_serialization//:ament_package",
+        "@ros_workspace//:ament_package",
+        "@rosbag2_cpp//:ament_package",
+        "@rosbag2_storage//:ament_package",
+        "@rosbag2_storage_mcap//:ament_package",
+        "@rosdistro//:ament_package",
+        "@yaml_cpp_vendor//:ament_package",
+    ],
+)

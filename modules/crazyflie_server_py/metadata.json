@@ -1,0 +1,17 @@
+{
+    "homepage": "https://index.ros.org/p/crazyflie_server_py/#lyrical",
+    "maintainers": [
+        {
+            "email": "hoenig@tu-berlin.de",
+            "name": "Wolfgang H\u00f6nig"
+        },
+        {
+            "email": "kimberleymcguire@gmail.com",
+            "name": "Kimberly N. McGuire"
+        }
+    ],
+    "versions": [
+        "1.0.4-1.rcr.1"
+    ],
+    "yanked_versions": {}
+}

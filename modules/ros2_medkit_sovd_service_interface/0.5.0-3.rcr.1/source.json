@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-34CewVE4n+ZP9PRoLXISXiE9O2fBTHzF4W4aYz9TAXs=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-sovd-service-interface/ros-lyrical-ros2-medkit-sovd-service-interface_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-sovd-service-interface-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-Qi8+BXIKc469NZ66E1JJb8nhwF0iXEe4NahZ8+eOssI="
+    }
+}

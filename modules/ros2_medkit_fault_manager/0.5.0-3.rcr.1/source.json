@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-bKe+S4hu4dWViwPaL/exWNObUBFmK85LB2UESGlA3jc=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-fault-manager/ros-lyrical-ros2-medkit-fault-manager_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-fault-manager-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-tk19PPSFDd42fCFBU3KXJt5aWUMLhCOmRo4CPIqTfWo="
+    }
+}

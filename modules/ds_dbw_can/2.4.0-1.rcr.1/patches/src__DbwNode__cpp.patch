@@ -1,0 +1,20 @@
+--- a/src/DbwNode.cpp
++++ b/src/DbwNode.cpp
+@@ -98,7 +98,7 @@ static can_frame SocketCanFrameFromDbw(const T& msg) {
+   static_assert(sizeof(msg) <= 8);
+   can_frame frame;
+   frame.can_id = msg.ID;
+-  frame.len = sizeof(msg);
++  frame.can_dlc = sizeof(msg);
+   memcpy(frame.data, &msg, sizeof(msg));
+   return frame;
+ }
+@@ -3471,4 +3471,4 @@ void DbwNode::recvCAN(const can_msgs::msg::Frame::SharedPtr msg_can) {
+-      case msg_steer_cmd_.ID: RCLCPP_WARN_EXPRESSION(get_logger(), warn_cmds_, WARN_CMD_TXT, "Steer",    msg_steer_cmd_.ID); break;
+-      case msg_brake_cmd_.ID: RCLCPP_WARN_EXPRESSION(get_logger(), warn_cmds_, WARN_CMD_TXT, "Brake",    msg_brake_cmd_.ID); break;
+-      case msg_thrtl_cmd_.ID: RCLCPP_WARN_EXPRESSION(get_logger(), warn_cmds_, WARN_CMD_TXT, "Throttle", msg_thrtl_cmd_.ID); break;
+-      case msg_gear_cmd_.ID:  RCLCPP_WARN_EXPRESSION(get_logger(), warn_cmds_, WARN_CMD_TXT, "Gear",     msg_gear_cmd_.ID);  break;
++      case MsgSteerCmdUsr::ID: RCLCPP_WARN_EXPRESSION(get_logger(), warn_cmds_, WARN_CMD_TXT, "Steer",    MsgSteerCmdUsr::ID); break;
++      case MsgBrakeCmdUsr::ID: RCLCPP_WARN_EXPRESSION(get_logger(), warn_cmds_, WARN_CMD_TXT, "Brake",    MsgBrakeCmdUsr::ID); break;
++      case MsgThrtlCmdUsr::ID: RCLCPP_WARN_EXPRESSION(get_logger(), warn_cmds_, WARN_CMD_TXT, "Throttle", MsgThrtlCmdUsr::ID); break;
++      case MsgGearCmdUsr::ID:  RCLCPP_WARN_EXPRESSION(get_logger(), warn_cmds_, WARN_CMD_TXT, "Gear",     MsgGearCmdUsr::ID);  break;

@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-UHt+zFz8lwDUFQjn5zb0w+oiDLj1QAB81pr3UOMtDq0=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-topic-beacon/ros-lyrical-ros2-medkit-topic-beacon_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-topic-beacon-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-PlULm6cJE1Nsw7ny4eyhK/N9GlcYMRbXKW815tD6Z2o="
+    }
+}

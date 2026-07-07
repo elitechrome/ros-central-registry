@@ -12,16 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rosdistro//ament:defs.bzl", "ament_package")
-load("@rosidl_default_generators//:defs.bzl", "default_generators")
+load("@aspect_rules_py//py:defs.bzl", "py_library")
+load("@pip_ros//:requirements.bzl", "requirement")
+load("@rosdistro//ament:defs.bzl", "ament_index", "ament_package")
 
 package(default_visibility = ["//visibility:public"])
 
-default_generators(
+ament_index(
+    name = "ament_index",
+    data = glob(["resource/**"]),
     package_xml = "package.xml",
+)
+
+py_library(
+    name = "crazyflie_py",
+    srcs = glob(["crazyflie_py/**/*.py"]),
+    data = [":ament_index"],
+    imports = ["."],
     deps = [
-        "//msg:NamedPose",
-        "//msg:NamedPoseArray",
+        requirement("numpy"),
+        "@crazyflie_interfaces//:py",
+        "@geometry_msgs//:py",
+        "@rcl_interfaces//:py",
+        "@rclpy",
+        "@sensor_msgs//:py",
+        "@std_srvs//:py",
     ],
 )
 
@@ -31,16 +46,13 @@ ament_package(
     name = "ament_package",
     package_xml = "package.xml",
     deps = [
-        "@ament_cmake//:ament_package",
-        "@ament_lint_common//:ament_package",
-        "@builtin_interfaces//:ament_package",
-        "@geometry_msgs//:ament_package",
-        "@ros_workspace//:ament_package",
+        ":ament_index",
+        ":crazyflie_py",
+        "@ament_copyright//:ament_package",
+        "@ament_flake8//:ament_package",
+        "@ament_pep257//:ament_package",
+        "@crazyflie_interfaces//:ament_package",
+        "@rclpy//:ament_package",
         "@rosdistro//:ament_package",
-        "@rosidl_default_generators//:ament_package",
-        "@rosidl_default_runtime//:ament_package",
-        "@rosidl_typesupport_fastrtps_c//:ament_package",
-        "@rosidl_typesupport_fastrtps_cpp//:ament_package",
-        "@std_msgs//:ament_package",
     ],
 )

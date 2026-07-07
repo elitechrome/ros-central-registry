@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-GacPjKmeHH920G+WyRYvMA+B3KJw6uVZJm7KqtSbWZQ=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-linux-introspection/ros-lyrical-ros2-medkit-linux-introspection_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-linux-introspection-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-/Fo8Spe58dirICTe+XlQ9HIy58X/v6VBkq5YJyuLDjc="
+    }
+}

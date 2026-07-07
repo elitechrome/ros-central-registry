@@ -1,0 +1,136 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosdistro//cc:defs.bzl", "ros_local_defines")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+PACKAGE_DATA = glob([
+    "config/**",
+    "launch/**",
+    "scripts/**",
+    "urdf/**",
+])
+
+CRAZYFLIE_LINK_CPP_ROOT = "deps/crazyflie_tools/crazyflie_cpp/crazyflie-link-cpp"
+CRAZYFLIE_CPP_ROOT = "deps/crazyflie_tools/crazyflie_cpp"
+
+cc_library(
+    name = "crazyflie_link_cpp_library",
+    srcs = [
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/Connection.cpp",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/ConnectionImpl.h",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/CrazyflieUSB.cpp",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/CrazyflieUSB.h",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/CrazyflieUSBThread.cpp",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/CrazyflieUSBThread.h",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/Crazyradio.cpp",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/Crazyradio.h",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/CrazyradioThread.cpp",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/CrazyradioThread.h",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/USBDevice.cpp",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/USBDevice.h",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/USBManager.cpp",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/USBManager.h",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src/Version.cpp",
+    ],
+    hdrs = glob([CRAZYFLIE_LINK_CPP_ROOT + "/include/**/*.h*"]),
+    copts = ["-std=c++17"],
+    includes = [
+        CRAZYFLIE_LINK_CPP_ROOT + "/include",
+        CRAZYFLIE_LINK_CPP_ROOT + "/src",
+    ],
+    linkopts = ["-pthread"],
+    textual_hdrs = [CRAZYFLIE_LINK_CPP_ROOT + "/version"],
+    deps = ["@libusb//:libusb"],
+)
+
+cc_library(
+    name = "crazyflie_cpp_library",
+    srcs = [
+        CRAZYFLIE_CPP_ROOT + "/src/Crazyflie.cpp",
+        CRAZYFLIE_CPP_ROOT + "/src/crtp.cpp",
+    ] + glob([CRAZYFLIE_CPP_ROOT + "/src/*.h"]),
+    hdrs = glob([CRAZYFLIE_CPP_ROOT + "/include/**/*.h*"]),
+    copts = ["-std=c++17"],
+    includes = [
+        CRAZYFLIE_CPP_ROOT + "/include",
+        CRAZYFLIE_CPP_ROOT + "/include/crazyflie_cpp",
+        CRAZYFLIE_CPP_ROOT + "/src",
+    ],
+    deps = [":crazyflie_link_cpp_library"],
+)
+
+ROS_NODE_DEPS = [
+    "@crazyflie_interfaces//:cc",
+    "@geometry_msgs//:cc",
+    "@motion_capture_tracking_interfaces//:cc",
+    "@nav_msgs//:cc",
+    "@rclcpp//:rclcpp_library",
+    "@rosdistro//cc:eigen",
+    "@sensor_msgs//:cc",
+    "@std_msgs//:cc",
+    "@std_srvs//:cc",
+    "@tf2_ros//:tf2_ros_library",
+]
+
+cc_binary(
+    name = "teleop",
+    srcs = ["src/teleop.cpp"],
+    copts = ["-std=c++17"],
+    local_defines = ros_local_defines(),
+    deps = ROS_NODE_DEPS,
+)
+
+cc_binary(
+    name = "crazyflie_server",
+    srcs = ["src/crazyflie_server.cpp"],
+    copts = ["-std=c++17"],
+    local_defines = ros_local_defines(),
+    deps = [
+        ":crazyflie_cpp_library",
+    ] + ROS_NODE_DEPS,
+)
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    data = PACKAGE_DATA,
+    executables = [
+        ":crazyflie_server",
+        ":teleop",
+    ] + glob(["scripts/*.py"]),
+    package_xml = "package.xml",
+    deps = [
+        "@ament_cmake//:ament_package",
+        "@ament_cmake_python//:ament_package",
+        "@crazyflie_interfaces//:ament_package",
+        "@eigen3_cmake_module//:ament_package",
+        "@geometry_msgs//:ament_package",
+        "@motion_capture_tracking_interfaces//:ament_package",
+        "@nav_msgs//:ament_package",
+        "@rclcpp//:ament_package",
+        "@rclpy//:ament_package",
+        "@ros_environment//:ament_package",
+        "@ros_workspace//:ament_package",
+        "@rosdistro//:ament_package",
+        "@sensor_msgs//:ament_package",
+        "@std_msgs//:ament_package",
+        "@std_srvs//:ament_package",
+        "@tf2_ros//:ament_package",
+    ],
+)

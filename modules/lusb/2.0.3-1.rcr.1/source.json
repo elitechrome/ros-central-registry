@@ -1,0 +1,12 @@
+{
+    "integrity": "sha256-ARu5vnRyIrFiQmJCFVUGXSNP6usA1rrGzr0At5NiZHU=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-lusb/ros-lyrical-lusb_2.0.3.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-lusb-2.0.3",
+    "patch_strip": 1,
+    "overlay": {
+        "BUILD.bazel": "sha256-bhvT+ccvFkezVNsIyIlsHxEasiwFB1YqEGvV7Wv/p9M="
+    },
+    "patches": {
+        "src__UsbDevice__cpp.patch": "sha256-XQ4aEk7oKEle9ORkH6gnZkHyye8652eKQ1bdlyqnLMw="
+    }
+}

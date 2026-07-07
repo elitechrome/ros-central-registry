@@ -13,34 +13,37 @@
 # limitations under the License.
 
 load("@rosdistro//ament:defs.bzl", "ament_package")
-load("@rosidl_default_generators//:defs.bzl", "default_generators")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_shared_library")
 
 package(default_visibility = ["//visibility:public"])
 
-default_generators(
-    package_xml = "package.xml",
-    deps = [
-        "//msg:NamedPose",
-        "//msg:NamedPoseArray",
-    ],
+HEADERS = glob(["include/**/*.hpp"])
+
+cc_library(
+    name = "lusb_library",
+    srcs = ["src/UsbDevice.cpp"],
+    hdrs = HEADERS,
+    copts = ["-std=c++20"],
+    includes = ["include"],
+    deps = ["@libusb//:libusb"],
+)
+
+cc_shared_library(
+    name = "lusb",
+    exports_filter = [":lusb_library"],
+    deps = [":lusb_library"],
 )
 
 ### PACKAGING
 
 ament_package(
     name = "ament_package",
+    headers = HEADERS,
+    libraries = [":lusb"],
     package_xml = "package.xml",
     deps = [
         "@ament_cmake//:ament_package",
-        "@ament_lint_common//:ament_package",
-        "@builtin_interfaces//:ament_package",
-        "@geometry_msgs//:ament_package",
         "@ros_workspace//:ament_package",
         "@rosdistro//:ament_package",
-        "@rosidl_default_generators//:ament_package",
-        "@rosidl_default_runtime//:ament_package",
-        "@rosidl_typesupport_fastrtps_c//:ament_package",
-        "@rosidl_typesupport_fastrtps_cpp//:ament_package",
-        "@std_msgs//:ament_package",
     ],
 )

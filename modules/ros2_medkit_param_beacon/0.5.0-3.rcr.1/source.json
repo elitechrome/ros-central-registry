@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-cmuwNIAl7Q0Db0nBHJCbZLTIBD654MhGmkpDZjYDOGo=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-param-beacon/ros-lyrical-ros2-medkit-param-beacon_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-param-beacon-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-R5jfCwk5ksFGUyvUTtnUqG/fycHomCh4VUM+Y1wDV+k="
+    }
+}

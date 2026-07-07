@@ -3,7 +3,7 @@
     "url": "https://github.com/ros2-gbp/motion_capture_tracking-release/archive/refs/tags/release/lyrical/motion_capture_tracking_interfaces/1.0.8-1.tar.gz",
     "strip_prefix": "motion_capture_tracking-release-release-lyrical-motion_capture_tracking_interfaces-1.0.8-1",
     "overlay": {
-        "BUILD.bazel": "sha256-de1U8LXVZPJG6BRhDzFu/lKuqtZyY9059QtNHkLyR0g=",
+        "BUILD.bazel": "sha256-GUXUZko9mxetAR1lHJu1cMpOvY3FOc6h0vmL96I899s=",
         "msg/BUILD.bazel": "sha256-41Lv8wSjM6cZtoSMcL0bL/epYHGNOsvOmz1YtUKz3fc="
     }
 }

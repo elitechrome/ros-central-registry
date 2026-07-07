@@ -1,0 +1,6 @@
+--- a/src/CanSocket.cpp
++++ b/src/CanSocket.cpp
+@@ -36,2 +36,3 @@
+ #include <rclcpp/rclcpp.hpp>
+ #include <cstring>
++#include <unistd.h>

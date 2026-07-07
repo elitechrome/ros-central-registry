@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-jmdToxZjFbNIGKNY8OBpf9uDBUOli4Hxrs1ZNOw0n2w=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-graph-provider/ros-lyrical-ros2-medkit-graph-provider_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-graph-provider-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-1IHveGH8EeMBsQCDr+ldNclj3weOlsNXOVsIqpTPq7w="
+    }
+}

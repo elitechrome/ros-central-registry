@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-Jbp0LQnJfIhpsJCcKTWSXtiVfIV8GnMtZctTGdb/D0A=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-dataspeed-can-usb/ros-lyrical-dataspeed-can-usb_2.0.7.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-dataspeed-can-usb-2.0.7",
+    "overlay": {
+        "BUILD.bazel": "sha256-MI5EnucoBmYQbLgT3o1Hoc7xVomVhqIA8iYrxcQyu6A="
+    }
+}

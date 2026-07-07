@@ -1,0 +1,137 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@aspect_rules_py//py:defs.bzl", "py_library")
+load("@pip_ros//:requirements.bzl", "requirement")
+load("@rosdistro//ament:defs.bzl", "ament_index", "ament_package")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps", "ros_local_defines")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+HEADERS = glob(["include/**/*.hpp"])
+
+PACKAGE_DATA = glob(["launch/**"])
+
+ament_index(
+    name = "ament_index",
+    data = PACKAGE_DATA,
+    package_xml = "package.xml",
+)
+
+py_library(
+    name = "ros2_medkit_test_utils",
+    srcs = glob(["ros2_medkit_test_utils/**/*.py"]),
+    data = [
+        ":ament_index",
+    ] + PACKAGE_DATA,
+    imports = ["."],
+    deps = [
+        "@launch",
+        "@launch_ros",
+        "@launch_testing",
+        requirement("requests"),
+    ],
+)
+
+DEPENDENCIES = {
+    "@rclcpp//:rclcpp": "@rclcpp//:rclcpp_library",
+    "@rclcpp_action//:rclcpp_action": "@rclcpp_action//:rclcpp_action_library",
+}
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps",
+    dynamic_deps = DEPENDENCIES.keys(),
+    visibility = ["//visibility:private"],
+)
+
+DEMO_NODES = {
+    "demo_beacon_publisher": "demo_nodes/beacon_publisher.cpp",
+    "demo_brake_actuator": "demo_nodes/brake_actuator.cpp",
+    "demo_brake_pressure_sensor": "demo_nodes/brake_pressure_sensor.cpp",
+    "demo_calibration_service": "demo_nodes/calibration_service.cpp",
+    "demo_door_status_sensor": "demo_nodes/door_status_sensor.cpp",
+    "demo_engine_temp_sensor": "demo_nodes/engine_temp_sensor.cpp",
+    "demo_lidar_sensor": "demo_nodes/lidar_sensor.cpp",
+    "demo_light_controller": "demo_nodes/light_controller.cpp",
+    "demo_long_calibration_action": "demo_nodes/long_calibration_action.cpp",
+    "demo_param_beacon_node": "demo_nodes/param_beacon_node.cpp",
+    "demo_rpm_sensor": "demo_nodes/rpm_sensor.cpp",
+}
+
+[
+    cc_binary(
+        name = name,
+        srcs = [
+            src,
+        ] + HEADERS,
+        copts = ["-std=c++17"],
+        dynamic_deps = [":transitive_dynamic_deps"],
+        includes = ["include"],
+        local_defines = ros_local_defines(),
+        deps = DEPENDENCIES.values() + [
+            "@diagnostic_msgs//:cc",
+            "@example_interfaces//:cc",
+            "@rcl_interfaces//:cc",
+            "@ros2_medkit_msgs//:cc",
+            "@sensor_msgs//:cc",
+            "@std_msgs//:cc",
+            "@std_srvs//:cc",
+        ],
+    )
+    for name, src in DEMO_NODES.items()
+]
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    data = PACKAGE_DATA,
+    executables = [
+        ":{}".format(name)
+        for name in DEMO_NODES
+    ],
+    headers = HEADERS,
+    package_xml = "package.xml",
+    deps = [
+        ":ament_index",
+        ":ros2_medkit_test_utils",
+        "@ament_cmake//:ament_package",
+        "@ament_cmake_python//:ament_package",
+        "@ament_index_python//:ament_package",
+        "@diagnostic_msgs//:ament_package",
+        "@example_interfaces//:ament_package",
+        "@launch//:ament_package",
+        "@launch_ros//:ament_package",
+        "@launch_testing//:ament_package",
+        "@launch_testing_ament_cmake//:ament_package",
+        "@launch_testing_ros//:ament_package",
+        "@rcl_interfaces//:ament_package",
+        "@rclcpp//:ament_package",
+        "@rclcpp_action//:ament_package",
+        "@ros2_medkit_cmake//:ament_package",
+        "@ros2_medkit_fault_manager//:ament_package",
+        "@ros2_medkit_gateway//:ament_package",
+        "@ros2_medkit_graph_provider//:ament_package",
+        "@ros2_medkit_linux_introspection//:ament_package",
+        "@ros2_medkit_msgs//:ament_package",
+        "@ros2_medkit_param_beacon//:ament_package",
+        "@ros2_medkit_topic_beacon//:ament_package",
+        "@ros_workspace//:ament_package",
+        "@rosdistro//:ament_package",
+        "@sensor_msgs//:ament_package",
+        "@std_msgs//:ament_package",
+        "@std_srvs//:ament_package",
+    ],
+)

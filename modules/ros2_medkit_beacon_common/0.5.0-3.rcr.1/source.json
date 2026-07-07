@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-D59g3byQAwjNZdp35lT2zv01IRVxasPwOavXFOoaKX4=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-beacon-common/ros-lyrical-ros2-medkit-beacon-common_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-beacon-common-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-rRvWuj7uXKls+naW41xkt30x05LtntezXkkKxoJ8VuI="
+    }
+}

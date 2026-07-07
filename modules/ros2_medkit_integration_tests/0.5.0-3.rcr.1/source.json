@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-WJAzrXQ3jIrWgnDIsw/W/3HTookjxBu9uXJJTNrQYbs=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-ros2-medkit-integration-tests/ros-lyrical-ros2-medkit-integration-tests_0.5.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-ros2-medkit-integration-tests-0.5.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-psocMe94DgW46v0cEIT93L+gji5z4SbzJswJA5CBzIQ="
+    }
+}

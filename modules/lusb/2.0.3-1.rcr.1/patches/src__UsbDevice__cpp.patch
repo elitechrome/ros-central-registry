@@ -1,0 +1,5 @@
+--- a/src/UsbDevice.cpp
++++ b/src/UsbDevice.cpp
+@@ -37 +37 @@
+-#include <libusb-1.0/libusb.h>
++#include <libusb.h>

@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-72eCKhPbMn3fiuirdvS9ecu/mFDh0MHnbqNAqJvzIYc=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-crazyflie-py/ros-lyrical-crazyflie-py_1.0.4.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-crazyflie-py-1.0.4",
+    "overlay": {
+        "BUILD.bazel": "sha256-vLOJhAEdexl8JkkUr4/AsdxM1iyv1i86asrxBbnMI/s="
+    }
+}

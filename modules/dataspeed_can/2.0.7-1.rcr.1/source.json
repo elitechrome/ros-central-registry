@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-eMRPSNl/3DPz9GrMKkeWnnY6SXNufli/kzOmoAX7avA=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-dataspeed-can/ros-lyrical-dataspeed-can_2.0.7.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-dataspeed-can-2.0.7",
+    "overlay": {
+        "BUILD.bazel": "sha256-pyiTUnuiAuR7adUrjl3HuQW9xthWty1AQd0qbMkedps="
+    }
+}

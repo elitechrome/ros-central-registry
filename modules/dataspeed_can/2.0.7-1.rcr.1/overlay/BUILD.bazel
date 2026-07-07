@@ -13,34 +13,19 @@
 # limitations under the License.
 
 load("@rosdistro//ament:defs.bzl", "ament_package")
-load("@rosidl_default_generators//:defs.bzl", "default_generators")
 
 package(default_visibility = ["//visibility:public"])
-
-default_generators(
-    package_xml = "package.xml",
-    deps = [
-        "//msg:NamedPose",
-        "//msg:NamedPoseArray",
-    ],
-)
-
-### PACKAGING
 
 ament_package(
     name = "ament_package",
     package_xml = "package.xml",
     deps = [
         "@ament_cmake//:ament_package",
-        "@ament_lint_common//:ament_package",
-        "@builtin_interfaces//:ament_package",
-        "@geometry_msgs//:ament_package",
+        "@dataspeed_can_msg_filters//:ament_package",
+        "@dataspeed_can_msgs//:ament_package",
+        "@dataspeed_can_tools//:ament_package",
+        "@dataspeed_can_usb//:ament_package",
         "@ros_workspace//:ament_package",
         "@rosdistro//:ament_package",
-        "@rosidl_default_generators//:ament_package",
-        "@rosidl_default_runtime//:ament_package",
-        "@rosidl_typesupport_fastrtps_c//:ament_package",
-        "@rosidl_typesupport_fastrtps_cpp//:ament_package",
-        "@std_msgs//:ament_package",
     ],
 )
