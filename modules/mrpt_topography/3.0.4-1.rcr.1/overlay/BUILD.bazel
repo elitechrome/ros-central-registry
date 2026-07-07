@@ -1,0 +1,149 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@aspect_rules_py//py:defs.bzl", "py_library")
+load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps")
+load("@rosdistro//python:defs.bzl", "py_pytest")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_shared_library", "cc_test")
+
+package(default_visibility = ["//visibility:public"])
+
+### LIBRARIES
+
+HEADERS = glob(["include/**/*.h"])
+
+TRANSITIVE_DYNAMIC_DEPS = [
+    "@mrpt_containers//:mrpt_containers",
+    "@mrpt_core//:mrpt_core",
+    "@mrpt_random//:mrpt_random",
+    "@mrpt_rtti//:mrpt_rtti",
+    "@mrpt_serialization//:mrpt_serialization",
+    "@mrpt_system//:mrpt_system",
+]
+
+cc_library(
+    name = "mrpt_topography_library",
+    srcs = [
+        "src/conversions.cpp",
+        "src/registerAllClasses.cpp",
+    ],
+    hdrs = HEADERS,
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    deps = [
+        "@mrpt_math//:mrpt_math_library",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_topography",
+    dynamic_deps = [
+        "@mrpt_math//:mrpt_math",
+    ] + TRANSITIVE_DYNAMIC_DEPS,
+    exports_filter = [":mrpt_topography_library"],
+    deps = [":mrpt_topography_library"],
+)
+
+### PYTHON MODULES
+
+cc_library(
+    name = "mrpt_topography_py_bindings_library",
+    srcs = ["python_bindings/mrpt_topography_py.cpp"],
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":mrpt_topography_library",
+        "@rosdistro//cc:pybind11",
+        "@rules_python//python/cc:current_py_cc_headers",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_topography_py_bindings",
+    dynamic_deps = [
+        ":mrpt_topography",
+        "@mrpt_math//:mrpt_math",
+    ] + TRANSITIVE_DYNAMIC_DEPS,
+    exports_filter = [":mrpt_topography_py_bindings_library"],
+    shared_lib_name = "mrpt/topography/_bindings.so",
+    user_link_flags = select({
+        "@platforms//os:osx": [
+            "-undefined",
+            "dynamic_lookup",
+        ],
+        "//conditions:default": [],
+    }),
+    visibility = ["//visibility:private"],
+    deps = [":mrpt_topography_py_bindings_library"],
+)
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps",
+    dynamic_deps = [":mrpt_topography"],
+    visibility = ["//visibility:private"],
+)
+
+py_library(
+    name = "mrpt_topography_py",
+    srcs = glob(["python/mrpt/**/*.py"]),
+    data = [
+        ":mrpt_topography",
+        ":mrpt_topography_py_bindings",
+        ":transitive_dynamic_deps",
+    ],
+    imports = ["python"],
+    deps = [
+        "@mrpt_math//:mrpt_math_py",
+    ],
+)
+
+### TESTING
+
+cc_test(
+    name = "test_mrpt_topography",
+    srcs = ["tests/conversions_unittest.cpp"],
+    dynamic_deps = [":transitive_dynamic_deps"],
+    deps = [
+        ":mrpt_topography_library",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+py_pytest(
+    name = "test_python_topography",
+    srcs = ["tests/python_topography_test.py"],
+    deps = [
+        ":mrpt_topography_py",
+        "@rules_python//python/runfiles",
+    ],
+)
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    headers = HEADERS,
+    libraries = [":mrpt_topography"],
+    package_xml = "package.xml",
+    deps = [
+        "@ament_cmake//:ament_package",
+        "@ament_cmake_python//:ament_package",
+        "@mrpt_common//:ament_package",
+        "@mrpt_math//:ament_package",
+        "@rosdistro//:ament_package",
+    ],
+)

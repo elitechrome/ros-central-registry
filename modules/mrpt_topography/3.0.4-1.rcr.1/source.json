@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-pngFkBQhariEWffvctLTD/zPEuyQyCT/0YLc3HcAHAE=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-mrpt-topography/ros-lyrical-mrpt-topography_3.0.4.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-mrpt-topography-3.0.4",
+    "overlay": {
+        "BUILD.bazel": "sha256-OEdnhIZEsdVpxhEUaZflDHVjPsDg5Una9nVtx0mQa50="
+    }
+}
