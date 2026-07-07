@@ -1,0 +1,144 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@aspect_rules_py//py:defs.bzl", "py_library")
+load("@cmake_configure_file//:cmake_configure_file.bzl", "cmake_configure_file")
+load("@rosdistro//ament:defs.bzl", "ament_package")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps")
+load("@rosdistro//python:defs.bzl", "py_pytest")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_shared_library")
+
+package(default_visibility = ["//visibility:public"])
+
+### PREPROCESSING
+
+cmake_configure_file(
+    name = "config_h",
+    src = "config.h.in",
+    out = "include/mrpt/serialization/config.h",
+    defines = ["CMAKE_MRPT_HAS_JSONCPP=0"],
+)
+
+### LIBRARIES
+
+HEADERS = [
+    ":config_h",
+] + glob(["include/**/*.h"])
+
+cc_library(
+    name = "mrpt_serialization_library",
+    srcs = [
+        "src/CArchive.cpp",
+        "src/CMessage.cpp",
+        "src/CSerializable.cpp",
+        "src/CSchemeArchive.cpp",
+        "src/CSchemeArchiveBase.cpp",
+    ],
+    hdrs = HEADERS,
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    deps = [
+        "@mrpt_rtti//:mrpt_rtti_library",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_serialization",
+    dynamic_deps = [
+        "@mrpt_core//:mrpt_core",
+        "@mrpt_rtti//:mrpt_rtti",
+    ],
+    exports_filter = [":mrpt_serialization_library"],
+    deps = [":mrpt_serialization_library"],
+)
+
+### PYTHON MODULES
+
+cc_library(
+    name = "mrpt_serialization_py_bindings_library",
+    srcs = ["python_bindings/mrpt_serialization_py.cpp"],
+    copts = ["-std=c++17"],
+    includes = ["include"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":mrpt_serialization_library",
+        "@rosdistro//cc:pybind11",
+        "@rules_python//python/cc:current_py_cc_headers",
+    ],
+)
+
+cc_shared_library(
+    name = "mrpt_serialization_py_bindings",
+    dynamic_deps = [
+        ":mrpt_serialization",
+        "@mrpt_core//:mrpt_core",
+        "@mrpt_rtti//:mrpt_rtti",
+    ],
+    exports_filter = [":mrpt_serialization_py_bindings_library"],
+    shared_lib_name = "mrpt/serialization/_bindings.so",
+    user_link_flags = select({
+        "@platforms//os:osx": [
+            "-undefined",
+            "dynamic_lookup",
+        ],
+        "//conditions:default": [],
+    }),
+    visibility = ["//visibility:private"],
+    deps = [":mrpt_serialization_py_bindings_library"],
+)
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps",
+    dynamic_deps = [":mrpt_serialization"],
+    visibility = ["//visibility:private"],
+)
+
+py_library(
+    name = "mrpt_serialization_py",
+    srcs = glob(["python/mrpt/**/*.py"]),
+    data = [
+        ":mrpt_serialization",
+        ":mrpt_serialization_py_bindings",
+        ":transitive_dynamic_deps",
+    ],
+    imports = ["python"],
+    deps = ["@mrpt_rtti//:mrpt_rtti_py"],
+)
+
+### TESTING
+
+py_pytest(
+    name = "test_python_serialization",
+    srcs = ["tests/python_serialization_test.py"],
+    deps = [
+        ":mrpt_serialization_py",
+        "@rules_python//python/runfiles",
+    ],
+)
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    headers = HEADERS,
+    libraries = [":mrpt_serialization"],
+    package_xml = "package.xml",
+    deps = [
+        "@ament_cmake//:ament_package",
+        "@ament_cmake_python//:ament_package",
+        "@mrpt_common//:ament_package",
+        "@mrpt_rtti//:ament_package",
+        "@rosdistro//:ament_package",
+    ],
+)
