@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-FhMu/gzzqzymfoU+HByjnxn8bWos1K7q5SyAgvYB5X8=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-mrpt-random/ros-lyrical-mrpt-random_3.0.4.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-mrpt-random-3.0.4",
+    "overlay": {
+        "BUILD.bazel": "sha256-dK4KHZVCrcjWDmlXknAobk2va+1mFLqrR/tIXbBxhsY="
+    }
+}
