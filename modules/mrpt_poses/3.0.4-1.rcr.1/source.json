@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-N4LM4zyuBemk+DvL7lIZ9v073JEMX3FMtsBTrvSf40c=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-mrpt-poses/ros-lyrical-mrpt-poses_3.0.4.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-mrpt-poses-3.0.4",
+    "overlay": {
+        "BUILD.bazel": "sha256-kk/JO4H26hs/7kY9tvqNOXuLSfUMTzp8K2ImXbvoQqE="
+    }
+}
