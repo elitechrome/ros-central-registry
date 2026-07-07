@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-LpZ5v3bwvpUohIUpImEqtSLrtdL34XCIg2ZDYAnTnlE=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-audio-play/ros-lyrical-audio-play_0.4.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-audio-play-0.4.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-ny8Iyv20wYhBSiPHTN9HK4/zL/c2OBJ1u2E9ohiJCCE="
+    }
+}

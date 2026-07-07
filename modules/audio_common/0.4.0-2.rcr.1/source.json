@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-rNlXai0NSKUJ9X0bBMYYLAL2T6Vi+ijJAuNwK0Q+UFQ=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-audio-common/ros-lyrical-audio-common_0.4.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-audio-common-0.4.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-HvQuHhKG/Zry8VYn00auu9KjHUY5aEFSzY7+N6WMciA="
+    }
+}

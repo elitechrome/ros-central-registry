@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-nMm+cLNQT8l6n1z51sIrmvrmDepPvwXil2i81SXf4vQ=",
+    "url": "http://packages.ros.org/ros2/ubuntu/pool/main/r/ros-lyrical-audio-capture/ros-lyrical-audio-capture_0.4.0.orig.tar.gz",
+    "strip_prefix": "ros-lyrical-audio-capture-0.4.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-OwFKB5C9hAKZ4J3esJIctWTHhl7cjL6iRd/duOaMyX4="
+    }
+}
