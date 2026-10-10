@@ -1,0 +1,150 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Based on the BCR glu 9.0.3 module, plus @opengl-registry so that the OpenGL
+# headers come from Bazel rather than from the host (libgl-dev).
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@rules_license//rules:license.bzl", "license")
+
+package(
+    default_applicable_licenses = [":license"],
+    default_visibility = ["//visibility:public"],
+)
+
+license(
+    name = "license",
+    license_kinds = [
+        "@rules_license//licenses/spdx:SGI-B-2.0",
+    ],
+)
+
+cc_library(
+    name = "glu",
+    srcs = ["src/" + f for f in [
+        "libnurbs/interface/bezierEval.cc",
+        "libnurbs/interface/bezierPatch.cc",
+        "libnurbs/interface/bezierPatchMesh.cc",
+        "libnurbs/interface/glcurveval.cc",
+        "libnurbs/interface/glinterface.cc",
+        "libnurbs/interface/glrenderer.cc",
+        "libnurbs/interface/glsurfeval.cc",
+        "libnurbs/interface/incurveeval.cc",
+        "libnurbs/interface/insurfeval.cc",
+        "libnurbs/internals/arc.cc",
+        "libnurbs/internals/arcsorter.cc",
+        "libnurbs/internals/arctess.cc",
+        "libnurbs/internals/backend.cc",
+        "libnurbs/internals/basiccrveval.cc",
+        "libnurbs/internals/basicsurfeval.cc",
+        "libnurbs/internals/bin.cc",
+        "libnurbs/internals/bufpool.cc",
+        "libnurbs/internals/cachingeval.cc",
+        "libnurbs/internals/ccw.cc",
+        "libnurbs/internals/coveandtiler.cc",
+        "libnurbs/internals/curve.cc",
+        "libnurbs/internals/curvelist.cc",
+        "libnurbs/internals/curvesub.cc",
+        "libnurbs/internals/dataTransform.cc",
+        "libnurbs/internals/displaylist.cc",
+        "libnurbs/internals/flist.cc",
+        "libnurbs/internals/flistsorter.cc",
+        "libnurbs/internals/hull.cc",
+        "libnurbs/internals/intersect.cc",
+        "libnurbs/internals/knotvector.cc",
+        "libnurbs/internals/mapdesc.cc",
+        "libnurbs/internals/mapdescv.cc",
+        "libnurbs/internals/maplist.cc",
+        "libnurbs/internals/mesher.cc",
+        "libnurbs/internals/monoTriangulationBackend.cc",
+        "libnurbs/internals/monotonizer.cc",
+        "libnurbs/internals/mycode.cc",
+        "libnurbs/internals/nurbsinterfac.cc",
+        "libnurbs/internals/nurbstess.cc",
+        "libnurbs/internals/patch.cc",
+        "libnurbs/internals/patchlist.cc",
+        "libnurbs/internals/quilt.cc",
+        "libnurbs/internals/reader.cc",
+        "libnurbs/internals/renderhints.cc",
+        "libnurbs/internals/slicer.cc",
+        "libnurbs/internals/sorter.cc",
+        "libnurbs/internals/splitarcs.cc",
+        "libnurbs/internals/subdivider.cc",
+        "libnurbs/internals/tobezier.cc",
+        "libnurbs/internals/trimline.cc",
+        "libnurbs/internals/trimregion.cc",
+        "libnurbs/internals/trimvertpool.cc",
+        "libnurbs/internals/uarray.cc",
+        "libnurbs/internals/varray.cc",
+        "libnurbs/nurbtess/directedLine.cc",
+        "libnurbs/nurbtess/gridWrap.cc",
+        "libnurbs/nurbtess/monoChain.cc",
+        "libnurbs/nurbtess/monoPolyPart.cc",
+        "libnurbs/nurbtess/monoTriangulation.cc",
+        "libnurbs/nurbtess/partitionX.cc",
+        "libnurbs/nurbtess/partitionY.cc",
+        "libnurbs/nurbtess/polyDBG.cc",
+        "libnurbs/nurbtess/polyUtil.cc",
+        "libnurbs/nurbtess/primitiveStream.cc",
+        "libnurbs/nurbtess/quicksort.cc",
+        "libnurbs/nurbtess/rectBlock.cc",
+        "libnurbs/nurbtess/sampleComp.cc",
+        "libnurbs/nurbtess/sampleCompBot.cc",
+        "libnurbs/nurbtess/sampleCompRight.cc",
+        "libnurbs/nurbtess/sampleCompTop.cc",
+        "libnurbs/nurbtess/sampleMonoPoly.cc",
+        "libnurbs/nurbtess/sampledLine.cc",
+        "libnurbs/nurbtess/searchTree.cc",
+        "libtess/dict.c",
+        "libtess/geom.c",
+        "libtess/memalloc.c",
+        "libtess/mesh.c",
+        "libtess/normal.c",
+        "libtess/priorityq.c",
+        "libtess/render.c",
+        "libtess/sweep.c",
+        "libtess/tess.c",
+        "libtess/tessmono.c",
+        "libutil/error.c",
+        "libutil/glue.c",
+        "libutil/mipmap.c",
+        "libutil/project.c",
+        "libutil/quad.c",
+        "libutil/registry.c",
+    ]] + glob(["src/**/*.h"]),
+    hdrs = ["include/GL/glu.h"],
+    includes = [
+        "include",
+        "src/include",
+        "src/libnurbs/interface",
+        "src/libnurbs/internals",
+        "src/libnurbs/nurbtess",
+    ],
+    # The hermetic toolchain has no sysroot with libGL and drops host library
+    # search paths (-L), so the host-provided libGL is linked by path (the
+    # Debian/Ubuntu multiarch location). The GPU driver is a host concern.
+    linkopts = select({
+        "@platforms//cpu:aarch64": ["/usr/lib/aarch64-linux-gnu/libGL.so.1"],
+        "@platforms//cpu:x86_64": ["/usr/lib/x86_64-linux-gnu/libGL.so.1"],
+        "//conditions:default": ["-lGL"],
+    }),
+    local_defines = ["LIBRARYBUILD"],
+    target_compatible_with = ["@platforms//os:linux"],
+    textual_hdrs = ["src/libtess/priorityq-heap.c"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@egl-registry//:EGL_headers",
+        "@opengl-registry//:OpenGL_headers",
+    ],
+)
