@@ -1,0 +1,8 @@
+{
+    "integrity": "sha256-B+p6d8tptU6vpRnwz8CBAooUw5VRwcIBeFGHqKe4hpQ=",
+    "url": "https://github.com/ros2-gbp/joystick_drivers-release/archive/refs/tags/release/lyrical/joy/3.3.0-4.tar.gz",
+    "strip_prefix": "joystick_drivers-release-release-lyrical-joy-3.3.0-4",
+    "overlay": {
+        "BUILD.bazel": "sha256-9WlW8NN0rc/VJUi7Z0ZjU/lAEBaX/1dx1etVaEI049c="
+    }
+}
