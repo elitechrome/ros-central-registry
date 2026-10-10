@@ -1,0 +1,10 @@
+--- a/test/rviz_default_plugins/displays/marker/markers/markers_test_fixture.cpp
++++ b/test/rviz_default_plugins/displays/marker/markers/markers_test_fixture.cpp
+@@ -61,6 +61,7 @@
+ void MarkersTestFixture::TearDownTestCase()
+ {
+   DisplayTestFixture::TearDownTestCase();
++  ros_client_abstraction_.reset();
+   rclcpp::shutdown();
+ }
+ 

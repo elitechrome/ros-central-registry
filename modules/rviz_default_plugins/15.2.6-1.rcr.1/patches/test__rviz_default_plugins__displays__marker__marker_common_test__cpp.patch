@@ -1,0 +1,10 @@
+--- a/test/rviz_default_plugins/displays/marker/marker_common_test.cpp
++++ b/test/rviz_default_plugins/displays/marker/marker_common_test.cpp
+@@ -79,6 +79,7 @@
+   static void TearDownTestCase()
+   {
+     DisplayTestFixture::TearDownTestCase();
++    ros_client_abstraction_.reset();
+     rclcpp::shutdown();
+   }
+ 

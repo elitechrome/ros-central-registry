@@ -1,0 +1,274 @@
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rosdistro//ament:defs.bzl", "ament_index", "ament_package", "register_ament_files")
+load("@rosdistro//cc:defs.bzl", "collect_transitive_dynamic_deps", "ros_local_defines")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_shared_library")
+load("@rules_license//rules:license.bzl", "license")
+load("@rules_qt//:qt.bzl", "qt_cc_library", "qt_cc_test")
+
+package(
+    default_applicable_licenses = [":license"],
+    default_visibility = ["//visibility:public"],
+)
+
+license(
+    name = "license",
+    license_kinds = [
+        "@rules_license//licenses/spdx:BSD-3-Clause",
+    ],
+)
+
+ament_index(
+    name = "ament_index",
+)
+
+### LIBRARIES
+
+DEPENDENCIES = {
+    "@image_transport//:image_transport": "@image_transport//:image_transport_library",
+    "@interactive_markers//:interactive_markers": "@interactive_markers//:interactive_markers_library",
+    "@laser_geometry//:laser_geometry": "@laser_geometry//:laser_geometry_library",
+    "@point_cloud_transport//:point_cloud_transport": "@point_cloud_transport//:point_cloud_transport_library",
+    "@rclcpp//:rclcpp": "@rclcpp//:rclcpp_library",
+    "@resource_retriever_service_plugin//:resource_retriever_service_plugin": "@resource_retriever_service_plugin//:resource_retriever_service_plugin_library",
+    "@resource_retriever//:resource_retriever": "@resource_retriever//:resource_retriever_library",
+    "@rosdistro//cc:OgreMain": "@rosdistro//cc:OgreMain_library",
+    "@rosdistro//cc:OgreOverlay": "@rosdistro//cc:OgreOverlay_library",
+    "@rosdistro//cc:qt_abi_shim": "@rosdistro//cc:qt_abi_shim_library",
+    "@rviz_common//:rviz_common": "@rviz_common//:rviz_common_library",
+    "@rviz_rendering//:rviz_rendering": "@rviz_rendering//:rviz_rendering_library",
+    "@tf2_geometry_msgs//:tf2_geometry_msgs": "@tf2_geometry_msgs//:tf2_geometry_msgs_library",
+    "@tf2_ros//:tf2_ros": "@tf2_ros//:tf2_ros_library",
+    "@tf2//:tf2": "@tf2//:tf2_library",
+    "@urdf//:urdf": "@urdf//:urdf_library",
+}
+
+# qt_cc_library runs moc over hdrs: the display/tool/view controller headers
+# declare Q_OBJECT classes.
+qt_cc_library(
+    name = "rviz_default_plugins_library",
+    srcs = glob(
+        [
+            "src/**/*.cpp",
+            "src/**/*.hpp",
+            "src/**/*.h",
+        ],
+        allow_empty = True,
+    ),
+    hdrs = glob(
+        [
+            "include/**/*.hpp",
+            "include/**/*.h",
+        ],
+        allow_empty = True,
+    ),
+    includes = ["include"],
+    local_defines = ros_local_defines() + ["RVIZ_DEFAULT_PLUGINS_BUILDING_LIBRARY"],
+    deps = DEPENDENCIES.values() + [
+        "@geometry_msgs//:cc",
+        "@map_msgs//:cc",
+        "@nav_msgs//:cc",
+        "@rosdistro//cc:gz_math",
+        "@rules_qt//:qt_widgets",
+        "@visualization_msgs//:cc",
+    ],
+)
+
+cc_shared_library(
+    name = "rviz_default_plugins",
+    dynamic_deps = DEPENDENCIES.keys(),
+    exports_filter = [":rviz_default_plugins_library"],
+    deps = [":rviz_default_plugins_library"],
+)
+
+### TESTS
+
+# Ports the unit tests from upstream's CMakeLists.txt. The *_visual_test
+# targets are not ported: upstream only builds them with EnableVisualTests=True,
+# since they render scenes and compare them against reference images
+# (rviz_visual_testing_framework).
+
+TEST_DEPENDENCIES = DEPENDENCIES | {
+    ":rviz_default_plugins": ":rviz_default_plugins_library",
+}
+
+collect_transitive_dynamic_deps(
+    name = "transitive_dynamic_deps_test",
+    dynamic_deps = TEST_DEPENDENCIES.keys(),
+    visibility = ["//visibility:private"],
+)
+
+# Upstream installs these into share/rviz_default_plugins for its tests.
+register_ament_files(
+    name = "test_meshes",
+    package_name = "rviz_default_plugins",
+    files = glob(["test/ogre_media_resources/test_meshes/**"]),
+    strip_prefix = "test/ogre_media_resources",
+)
+
+cc_library(
+    name = "test_fixture_library",
+    testonly = True,
+    srcs = [
+        "test/rviz_default_plugins/displays/display_test_fixture.cpp",
+        "test/rviz_default_plugins/displays/marker/marker_messages.cpp",
+        "test/rviz_default_plugins/ogre_testing_environment.cpp",
+        "test/rviz_default_plugins/pointcloud_messages.cpp",
+        "test/rviz_default_plugins/scene_graph_introspection.cpp",
+    ],
+    hdrs = glob(["test/rviz_default_plugins/**/*.hpp"]),
+    includes = [
+        "src",
+        "test",
+    ],
+    local_defines = ros_local_defines(),
+    deps = TEST_DEPENDENCIES.values() + [
+        "@geometry_msgs//:cc",
+        "@rosdistro//cc:googletest",
+        "@rules_qt//:qt_widgets",
+        "@visualization_msgs//:cc",
+    ],
+)
+
+TESTS = {
+    "fps_view_controller_test": ["view_controllers/fps/fps_view_controller_test.cpp"],
+    "frame_info_test": ["displays/tf/frame_info_test.cpp"],
+    "frame_transformer_tf_test": ["transformation/frame_transformer_tf_test.cpp"],
+    "frame_view_controller_test": ["view_controllers/frame/frame_view_controller_test.cpp"],
+    "get_transport_from_topic_test": ["displays/image/get_transport_from_topic_test.cpp"],
+    "grid_cells_display_test": ["displays/grid_cells/grid_cells_display_test.cpp"],
+    "image_display_test": ["displays/image/image_display_test.cpp"],
+    "map_display_test": ["displays/map/map_display_test.cpp"],
+    "marker_common_test": ["displays/marker/marker_common_test.cpp"],
+    "marker_test": [
+        "displays/marker/markers/arrow_marker_test.cpp",
+        "displays/marker/markers/line_marker_test.cpp",
+        "displays/marker/markers/markers_test_fixture.cpp",
+        "displays/marker/markers/mesh_resource_marker_test.cpp",
+        "displays/marker/markers/points_marker_test.cpp",
+        "displays/marker/markers/shape_marker_test.cpp",
+        "displays/marker/markers/text_view_facing_marker_test.cpp",
+        "displays/marker/markers/triangle_list_marker_test.cpp",
+    ],
+    "measure_tool_test": ["tools/measure/measure_tool_test.cpp"],
+    "odometry_display_test": ["displays/odometry/odometry_display_test.cpp"],
+    "odometry_ogre_helper_test": ["displays/odometry/quaternion_helper_test.cpp"],
+    "orbit_view_controller_test": ["view_controllers/orbit/orbit_view_controller_test.cpp"],
+    "ortho_view_controller_test": ["view_controllers/ortho/ortho_view_controller_test.cpp"],
+    "palette_builder_test": ["displays/map/palette_builder_test.cpp"],
+    "path_display_test": ["displays/path/path_display_test.cpp"],
+    "point_cloud2_display_test": ["displays/pointcloud/point_cloud2_display_test.cpp"],
+    "point_cloud_common_test": ["displays/pointcloud/point_cloud_common_test.cpp"],
+    "point_cloud_scalar_display_test": ["displays/pointcloud/point_cloud_scalar_display_test.cpp"],
+    "point_cloud_transformers_test": [
+        "displays/pointcloud/point_cloud_transformers/axis_color_pc_transformer_test.cpp",
+        "displays/pointcloud/point_cloud_transformers/flat_color_pc_transformer_test.cpp",
+        "displays/pointcloud/point_cloud_transformers/intensity_pc_transformer_test.cpp",
+        "displays/pointcloud/point_cloud_transformers/rgb8_pc_transformer_test.cpp",
+        "displays/pointcloud/point_cloud_transformers/rgbf32_pc_transformer_test.cpp",
+        "displays/pointcloud/point_cloud_transformers/xyz_pc_transformer_test.cpp",
+    ],
+    "point_display_test": ["displays/point/point_stamped_display_test.cpp"],
+    "pose_array_display_test": ["displays/pose_array/pose_array_display_test.cpp"],
+    "pose_tool_test": ["tools/pose/pose_tool_test.cpp"],
+    "range_display_test": ["displays/range/range_display_test.cpp"],
+    "robot_test": ["robot/robot_test.cpp"],
+    "ros_image_texture_test": ["displays/image/ros_image_texture_test.cpp"],
+    "selection_tool_test": ["tools/select/selection_tool_test.cpp"],
+    "transformer_guard_test": ["transformation/transformer_guard_test.cpp"],
+    "xy_orbit_view_controller_test": ["view_controllers/xy_orbit/xy_orbit_view_controller_test.cpp"],
+}
+
+[
+    qt_cc_test(
+        name = name,
+        srcs = ["test/rviz_default_plugins/" + src for src in srcs],
+        data = [
+            ":ament_index",
+            ":test_meshes",
+            # Loaded through pluginlib when the displays are created.
+            "@image_transport//:ament_index_package",
+            "@image_transport//:ament_index_plugin",
+            "@point_cloud_transport//:ament_index_package",
+            "@point_cloud_transport//:ament_index_plugin",
+            "@rviz_common//:ament_index",
+            "@rviz_rendering//:ament_index",
+            "@rviz_rendering_tests//:ament_package",
+            "@rviz_rendering_tests//:test_meshes",
+            # The URDF parser plugin, loaded by the robot model.
+            "@urdf//:ament_index",
+            "@urdf//:ament_index_urdf",
+        ],
+        dynamic_deps = [":transitive_dynamic_deps_test"],
+        env_inherit = [
+            "DISPLAY",
+            "QT_QPA_PLATFORM",
+        ],
+        includes = [
+            "src",
+            "test",
+        ],
+        local_defines = ros_local_defines(),
+        tags = ["no-sandbox"],
+        deps = TEST_DEPENDENCIES.values() + [
+            ":test_fixture_library",
+            "@geometry_msgs//:cc",
+            "@rosdistro//cc:googletest",
+            "@rules_qt//:qt_widgets",
+            "@visualization_msgs//:cc",
+        ],
+    )
+    for name, srcs in TESTS.items()
+]
+
+### PACKAGING
+
+ament_package(
+    name = "ament_package",
+    package_xml = "package.xml",
+    deps = [
+        ":ament_index",
+        "@ament_cmake_gmock//:ament_package",
+        "@ament_cmake_gtest//:ament_package",
+        "@ament_cmake_lint_cmake//:ament_package",
+        "@ament_cmake_ros//:ament_package",
+        "@ament_index_cpp//:ament_package",
+        "@ament_lint_auto//:ament_package",
+        "@ament_lint_common//:ament_package",
+        "@geometry_msgs//:ament_package",
+        "@gz_math_vendor//:ament_package",
+        "@image_transport//:ament_package",
+        "@interactive_markers//:ament_package",
+        "@laser_geometry//:ament_package",
+        "@map_msgs//:ament_package",
+        "@nav_msgs//:ament_package",
+        "@pluginlib//:ament_package",
+        "@point_cloud_transport//:ament_package",
+        "@rclcpp//:ament_package",
+        "@resource_retriever//:ament_package",
+        "@resource_retriever_service_plugin//:ament_package",
+        "@rosdistro//:ament_package",
+        "@rviz_common//:ament_package",
+        "@rviz_ogre_vendor//:ament_package",
+        "@rviz_rendering//:ament_package",
+        "@rviz_rendering_tests//:ament_package",
+        "@rviz_visual_testing_framework//:ament_package",
+        "@tf2//:ament_package",
+        "@tf2_geometry_msgs//:ament_package",
+        "@tf2_ros//:ament_package",
+        "@urdf//:ament_package",
+        "@visualization_msgs//:ament_package",
+    ],
+)
