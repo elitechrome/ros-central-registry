@@ -63,8 +63,20 @@ jobs:
         - lyrical.2026-10-05.rcr.0
         variant:
         - perception
+        - desktop
         os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-26.04", "ubuntu-26.04-arm"]') || fromJSON('["ubuntu-26.04", "ubuntu-26.04-arm", "macos-26-intel", "macos-26"]') }}
+        exclude:
+        # The desktop variant needs GLX, which only exists on Linux.
+        - variant: desktop
+          os: macos-26-intel
+        - variant: desktop
+          os: macos-26
     steps:
+
+    # The desktop variant links the host-provided libGL (see ogre in bcr_staging).
+    - name: Install OpenGL runtime (desktop variant)
+      if: matrix.variant == 'desktop'
+      run: sudo apt-get update && sudo apt-get install -y libgl1
 
     # Pin Xcode explicitly on macOS runners.
     - name: Select Xcode

@@ -117,7 +117,11 @@ available variants are `core`, `base`, `desktop`, `desktop_full`, `perception` a
 whole distribution from source and can take a long time on a cold cache; subsequent builds
 reuse the local and remote caches.
 
-Right now we support everything up to perception. Beyond perception, the other variants (desktop, simulation and desktop_full) are incomplete. The biggest issue is that packages (rviz, gazebo, etc) depend on OpenGL, which requires headers to be supplied from the host, breaking hermeticity.
+We support everything up to and including `desktop` on Linux (x86_64 and arm64). The `simulation` and `desktop_full` variants are still incomplete (they need the rest of Gazebo), and `desktop` is not supported on macOS because the Ogre rendering backend needs GLX.
+
+The `desktop` variant links the host's OpenGL library (`libGL.so.1`, e.g. `apt install libgl1`) by its Debian/Ubuntu multiarch path; the OpenGL, EGL and X11 headers are supplied hermetically. The rendering and Qt tests also need a display: use a real one, or a virtual one such as `Xvfb :99 -maxclients 2048 &` with `DISPLAY=:99` and `LIBGL_ALWAYS_SOFTWARE=1` (`libgl1-mesa-dri`); with a virtual display, cap test concurrency (e.g. `--local_test_jobs=8`), as many parallel Qt/GLX clients make window creation fail intermittently.
+
+rqt C++ plugins (e.g. `rqt_image_view`) are not available yet: upstream only builds `qt_gui_cpp`'s PyQt (sip) bindings, and the PyQt6 wheels bundle a Qt (6.8.2) that cannot be mixed with the Qt used by the C++ packages (6.8.3). Python rqt plugins work.
 
 # Usage instructions
 
